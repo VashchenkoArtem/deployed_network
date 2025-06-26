@@ -15,7 +15,7 @@ gunicorn==23.0.0
 h11==0.16.0
 hyperlink==21.0.0
 idna==3.10
-incremental==24.7.2.2.9
+incremental==24.7.2
 psycopg-pool==3.2.6
 pyasn1==0.6.1
 pyasn1_modules==0.4.2
