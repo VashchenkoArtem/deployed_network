@@ -87,7 +87,7 @@ TEMPLATES = [
         },
     },
 ]
-CSRF_TRUSTED_ORIGINS = ["https://disciplined-peace-production-9ac1.up.railway.app"]
+CSRF_TRUSTED_ORIGINS = ["deployednetwork-production.up.railway.app"]
 # ASGI_APPLICATION = 'social_network.asgi.application'
 # CHANNEL_LAYERS = {
 #     "default":{
