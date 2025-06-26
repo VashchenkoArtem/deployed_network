@@ -16,6 +16,7 @@ h11==0.16.0
 hyperlink==21.0.0
 idna==3.10
 incremental==24.7.2
+mysql-connector-python==9.3.0
 mysqlclient==2.2.7
 packaging==25.0
 paramiko==3.5.1
@@ -39,5 +40,6 @@ txaio==23.1.1
 typing_extensions==4.14.0
 tzdata==2025.2
 uvicorn==0.34.3
+wheel==0.45.1
 whitenoise==6.9.0
 zope.interface==7.2
