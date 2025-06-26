@@ -1,0 +1,419 @@
+{% extends 'base_header_main.html' %}
+{% load custom_tags %}
+
+{% load static %}
+{% block title %}
+    Головна
+{% endblock %}
+
+{% block link %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class = "body">
+        <div class = "profile-frame">
+            <div class = "frame profile">
+                <div class = "avatar">
+                    {% if my_avatars %}
+                        {% for avatar in my_avatars %}
+                            {% if avatar.image %}      
+                                <img class = "my-avatar" src="{{ avatar.image.url }}" alt="">
+                            {% endif %}
+                        {% endfor%}
+                    {% else %}
+                        <img class = "my-avatar" src="{% static 'images/icons/account.png'%}" alt="">
+                    {% endif %}
+                </div>
+                <div class = "nick-and-tag">
+                    <h2 class = "name">{{request.user.first_name}} {{request.user.last_name}}</h2>
+                    <h3 class = "tag">@{{request.user.username}}</h3>
+                </div>
+                <div class = "subscribers" >
+                    <div class = "all-posts section">
+                        <h2 class = "number">{{ posts_count | length }}</h2>
+                        <h3 class = "info">Дописи</h3>  
+                    </div>
+                    <div class = "followers section">
+                        {% if all_views %}
+                            <h2 class = "number">{{ all_views.count}}</h2>
+                        {% else %}
+                            <h2 class = "number">0</h2>
+                        {% endif %}
+                        <h3 class = "info">Читачі</h3>
+                    </div>
+                    <div class = "all-friends section">
+                        <h2 class = "number">{{ my_friends | length }}</h2>
+                        <h3 class = "info">Друзі</h3>
+                    </div>
+                </div>
+            </div>
+            <div class = "frame request">
+                <div class = "title-frame">
+                    <div class = "logo-frame">
+                        <div class = "icon">
+                            <img class = "icon-people-request" src="{% static 'images/icons/friends.png'%}" alt="">
+                        </div>
+                        <h3 class = "description-block">Запити</h3>
+                    </div>
+                    <div class = "button-frame">
+                        <h3>Дивитись всі</h3>
+                    </div>
+                </div>  
+                <div class = "body-frame">
+                    {% for request in all_requests %}
+                        {% if request.accepted == False%}
+                            <a class = "one-people" href = "{% url 'all_requests'%}">
+                                <div class = "people-information">
+                                    <div class = "icon-people">
+                                        {% with author_avatar=author_avatars|get_item:request.profile1.id %}
+                                            {% if author_avatar and author_avatar.image %}
+                                                <img class="post-friend-avatar" src="{{ author_avatar.image.url }}" alt="">
+                                            {% else %}
+                                                <img class="post-friend-avatar" src="{% static 'images/icons/account.png' %}" alt="">
+                                            {% endif %}
+                                        {% endwith %}
+                                    </div>
+                                        <div class = "people-name-and-subscribers">
+                                            <h3 class = "friend-name request-block">{{ request.profile1.user.first_name }} {{ request.profile1.user.last_name }}</h3>
+                                            <h4 class = "subscribe">4.3к підписників</h4>
+                                        </div>  
+                                </div>
+                            </a>
+                        {% endif %}
+                    {% endfor%}     
+                </div>
+            </div>
+            
+            
+            <div class = "frame message">
+                <div class = "title-frame">
+                    <div class = "logo-frame">
+                        <div class = "icon">
+                            <img class = "icon-people-request" src="{% static 'images/icons/chats.png'%}" alt="">
+                        </div>
+                        <h3 class = "description-block">Повідомлення</h3>
+                    </div>
+                    <div class = "button-frame">
+                        <h3>Дивитись всі</h3>
+                    </div>  
+                </div>
+                <div class = "body-frame">
+                    {% for group in all_groups %}
+                        {% if group.is_personal_chat == True %}
+                            {% for member in group.members.all %}
+                                {% if member != current_user and current_user in group.members.all %}
+                                    <div class = "one-people">
+                                        <div class = "people-information">
+                                            <div class = icon-people>
+                                            {% with member.id as member_id %}
+                                                {% with author_avatars|get_item:member_id as author_avatar %}
+                                                    {% if author_avatar and author_avatar.image %}
+                                                        <img class="post-friend-avatar" src="{{ author_avatar.image.url }}" alt="">
+                                                    {% else %}
+                                                        <img class="post-friend-avatar" src="{% static 'images/icons/account.png' %}" alt="">
+                                                    {% endif %}
+                                                {% endwith %}
+                                            {% endwith %}
+                                            </div>
+                                            <a class = "people-name-and-message" href = "{% url 'chat' group.pk %}">
+                                                <div class = "people-name-and-time">
+                                                    <h3 class = "friend-name">{{group.name}}</h3>
+                                                    <h3 class = "time">09:41</h3>
+                                                </div>
+                                                <h4 class = message-friend>Привіт! Як справи?</h4>
+                                            </a>
+                                        </div>
+                                    </div>
+                                {% endif%}
+                            {% endfor %}
+                        {% endif%}
+                    {% endfor %}
+                </div>
+            </div>
+            
+        </div>  
+        <div class = "full-screen"></div>
+        <div class = "body-page">
+            <div class = "chat-input">
+                <form method = "post" >
+                    {% csrf_token %}
+                    <div class = "inputs">
+                        <input class = "post-message" type="text" placeholder="Про що ти зараз думаєш?">
+                        <div class = "inputs-photo-emoji">
+                            <div class = "hidden-input">
+                                <input id = "image-to-post" class = "image-to-post" type="file" hidden>
+                                <label for="image-to-post">
+                                    <img class = "image-icon"src="{% static 'images/icons/icon-image.png'%}">
+                                </label>
+                            </div>
+                            <div class = "hidden-input">
+                                <input id = "image-to-post" class = "image-to-post" type="file" hidden>
+                                <label for="image-to-post">
+                                    <img class = "image-icon" src="{% static 'images/icons/icon-emoji.png'%}">
+                                </label>
+                            </div>
+                            <button class = "button-upload" type = "submit">
+                                <h4 class = "upload-title">Перейти до оформлення</h4>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class = "posts-wrapper">
+                <div class = "posts">
+                    {% for post in posts %}
+                        {% for user in all_users %}
+                            {% if user == post.author %}
+                                <div class = "redact-post-function hidden">
+                                    <div class="redact-form">
+                                        <div class="cross-img">
+                                            <img class="cross-redact" src="{% static 'images/icons/cross.png'%}" alt="">
+                                        </div>
+
+                                        <h1 class="title-form">Створення публікації</h1>
+                                        <form method="post" action = "{% url 'edit' post.pk %}" class = "input-form"enctype="multipart/form-data">
+                                            {% csrf_token %}
+                                            {% for field in form %}
+                                                {% if field.name == 'images' %}
+                                                    <div class="label-tag">
+                                                        {{ field.label_tag }}
+                                                        <div class="inputs-photo-emoji-form">
+                                                            <div class="emojy-and-photo">
+                                                                {{ field }}
+                                                                
+                                                                <label for="image-to-post-form" class = "image-icon-form-label">
+                                                                    <img class="image-icon-form" src="{% static 'images/icons/icon-image.png' %}" alt="">
+                                                                </label>
+
+                                                                <img src="{% static 'images/icons/emoji.png' %}" alt="">
+                                                                <button  class="button-upload-form">
+                                                                    <h4 class="upload-title">Публікація</h4>
+                                                                    <img src="{% static 'images/icons/PlaneR.png' %}" alt="">
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="field-error">{{ field.errors }}</div>
+                                                {% else %}
+                                                    <div class="inputs-form">
+                                                        <div class="label-tag">{{ field.label_tag }}</div>
+                                                        <div class="field">{{ field }}</div>
+                                                        <div class="field-error">{{ field.errors }}</div>
+                                                    </div>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class = "social-media-post" id = "{{ post.pk }}">
+                                    <div class = "redact-wrapper hidden">
+                                        <div class = "redact-post">
+                                            <div class = "dots dot-form">
+                                                <img class = "dot" src="{% static 'images/icons/Dots.png'%}" alt="">
+                                            </div>  
+
+                                            <div class = "redacting redacting-button">
+                                                <img class = "image-redact" src="{% static 'images/icons/redact.png'%}" alt="">
+
+
+                                                <h1 class="redacting-title redacting-title-redact" id = "{{post.pk}}">Редагувати допис</h1>
+                                            </div>    
+                                            
+                                                
+                                            <div class = "line"></div>  
+                                            <div class = "redacting deleting-button">
+                                                
+                                                <img class = "image-redact" src="{% static 'images/icons/delete.png'%}" alt="">
+                                                <form method = "post" action="{% url 'delete' post.pk%}">
+                                                    {% csrf_token %}
+                                                    <button type = "submit"  class = "redacting-title">Видалити публікацію</button>
+                                                </form>
+                                            </div>      
+                                        </div>
+                                    </div>
+                                    <div class = "people-information-post">
+                                        <div class = "avatar-label">
+                                            <div class = "people-logo-and-nick">
+                                                <div class = "logo-post">
+                                               
+
+                                                <div class="logo-post">
+                                                    {% with author_avatar=author_avatars|get_item:post.author.id %}
+                                                        {% if author_avatar and author_avatar.image %}
+                                                            <img class="post-friend-avatar" src="{{ author_avatar.image.url }}" alt="">
+                                                        {% else %}
+                                                            <img class="post-friend-avatar" src="{% static 'images/icons/account.png' %}" alt="">
+                                                        {% endif %}
+                                                    {% endwith %}
+                                                </div>
+                                                </div>
+                                                <div class = "nick-post">
+                                                    <h2 class = "nick-friend">{{post.author.user.first_name}} {{post.author.user.last_name}}</h2>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class = "dots dots-post">
+                                        </div>         
+                                    </div>
+                                    
+                                    <div class = "body-post">
+                                        <h2 class = "title-post">{{post.title}}</h2>
+                                        <h2 class = "title-post">{{post.topic}}</h2>
+                                        <h3 class = "description-post">{{post.content}}</h3>
+                                        {% if post.tags.all %}
+                                        <div class = "hashtags">
+                                            
+                                            {% for tag in post.tags.all %}
+                                            <h1 class = "hashtag">{{tag.name}}</h1>
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                        
+                                        {% for url in all_urls %}
+                                            {% if url.post == post %}
+                                            <div class = "url-post">
+                                                <a href = "{{ url.url }}" target="_blank" class = "url-post">{{ url.url}}</a>
+                                            </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                        <div class="photos ">
+                                            {% for img in post.images.all %}
+                                            <img src="{{ img.file.url }}" class="image photos-{{ post.images.all|length }} number-{{forloop.counter}}"   >
+                                            {% endfor %}
+                                        </div>
+                                        <div class = "reviews">
+                                            <div class = "review">
+                                                <a class = "icon-review icon-like {{post.pk}}" id ="{% url 'get_likes' post.pk %}" >
+                                                    <img class = "likes-icon likes-icon-click" src="{% static 'images/icons/Like.png'%}" alt="">
+                                                </a>
+                                                <h2 class = "likes likes-title"><span id = "likesPost-{{post.pk}}">{{ post.likes.count }}</span> Вподобайок</h2>
+                                            </div>
+                                            <div class = "review review-margin">
+                                                <div class = "icon-review">
+                                                    <img class = "likes-icon" src="{% static 'images/icons/eye.png'%}" alt="">
+                                                </div>
+                                                <h2 class = "likes">{{ post.views.count }} Переглядів</h2>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div> 
+    </div>
+
+
+        <div class="hidden frame-form">
+            <div class="form">
+                <div class="cross-img">
+                    <img class="cross" src="{% static 'images/icons/cross.png'%}" alt="">
+                </div>
+
+                <h1 class="title-form">Створення публікації</h1>
+                <form method="post" class = "input-form"enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {% for field in form %}  
+                        
+                        {% if field.name == "tags" %}
+                            <div class = "all_tags">    
+                                <div class = "tag-container">
+                                    {% for tag in tags %}
+                                        <label type = "button" class="tag-object" data-id="{{ tag.id }}">
+                                            {{ tag.name }}
+                                            <input type="checkbox" name="tags" value="{{ tag.id }}">
+                                        </label>
+                                    {% endfor %}
+                                    <button class = "button-hashtag" type = "button">
+                                        <img  class = "image-hashtag" src="{% static 'images/icons/add_hashtag.png' %}" alt="">
+                                    </button>
+                                    <input type="text" class = "add-tag hidden" value="#">
+                                    <img class = "image-hashtag image-confirm-tag hidden" src="{% static 'images/icons/correct.png'%}" alt="">
+                                </div>
+                            </div>
+                        {% elif field.name != "images" and field.name != "url" %}
+                            <div class="inputs-form">
+                                <div class="label-tag">{{ field.label_tag }}</div>
+                                <div class="field">{{ field }}</div>
+                                <div class="field-error">{{ field.errors }}</div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                    <div class = "url-inputs">
+                        {% for field in form %}
+                            {% if field.name == "url" %}
+                                <div class = "input-url">
+                                    <div class="inputs-form">
+                                        <div class="label-tag">{{ field.label_tag }}</div>
+                                        <div class="field">{{ field }}</div>
+                                        <div class="field-error">{{ field.errors }}</div>
+                                    </div>
+                                    <img  class = "image-tag" src="{% static 'images/icons/add_hashtag.png' %}" alt="">
+                                </div>
+                            {% endif%}
+                        {% endfor %}
+                    </div>
+                    <div class="label-tag">
+                        <div id="image-preview-container"></div>
+                        <div class="inputs-photo-emoji-form">
+                            <div class="emojy-and-photo">
+                                <img id="custom-upload-button" class="image-icon-form" src="{% static 'images/icons/icon-image.png' %}" alt="Upload">
+                                <input type="file" id="image-to-post-form" name="images" multiple hidden>
+                                <button class="button-upload-form" type="submit">
+                                    <h4 class="upload-title">Публікація</h4>
+                                    <img class="image-planer" src="{% static 'images/icons/PlaneR.png' %}" alt="">
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                </form>
+            </div>    
+        </div>
+
+    {% if request.user.first_name == "" %}
+        <div class="form-overlay" >
+            <form  method = "post" action="{% url 'update_user' %}">
+                {% csrf_token %}
+                <div class = "entrance">
+                    
+                    <div class = "text">
+                        <p>Додай деталі про себе</p>
+                    </div>
+                    <div class = "information">
+
+                        <div class = "names">
+                            <p>Ім’я</p>
+                            <input type="text"  name="first_name" class = "input-name" placeholder = "Введіть Ваше ім’я" value="{{ user.first_name }}">
+                        </div>
+                        <div class = "surname">
+                            <p>Прізвище</p>
+                            <input type="text"  name="last_name"  class = "input-name" placeholder = "Введіть Ваше прізвище" value="{{ user.last_name }}">
+                        </div>
+                        <div class = "name-user">
+                            <p>Ім’я користувача</p>
+                            <input type="text"  name="username" class = "input-name" placeholder = "@" value="{{ user.username }}">
+                            <p class="options">
+                                <span class="select-text">Або оберіть:</span>
+                                <span class="suggestion">Запропоновані варіанти відповідно до Ім’я та Прізвища</span>
+                            </p>
+                        </div>    
+                    </div>
+                    <div class = "button">
+                        <button type = "submit" class = "button-options">Продовжити</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    {% endif %}
+{% endblock %}
+{% block script %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src = "{% static 'js/script.js' %}"></script>
+    <script src = "{% static 'js/ajax.js' %}"></script>
+{% endblock %}

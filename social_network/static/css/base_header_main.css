@@ -1,0 +1,139 @@
+@font-face {
+    font-family: 'GT Walsheim Pro';
+    src: url('../fonts/GTWalsheimPro-Medium.woff2') format('woff2');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'GT Walsheim Pro';
+    src: url('../fonts/GTWalsheimPro-Bold.woff2') format('woff2');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'GT Walsheim Pro';
+    src: url('../fonts/GTWalsheimPro-Light.woff2') format('woff2');
+    font-weight: 500;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'GT Walsheim Pro';
+    src: url('../fonts/GTWalsheimPro-Regular.woff2') format('woff2');
+    font-weight: 500;
+    font-style: normal;
+}
+*{
+    font-family: 'GT Walsheim Pro', sans-serif;
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+    
+}
+.favicon-icon{
+    border-radius: 1234px;
+}
+body{
+    background-color:   rgba(233, 229, 238, 1);
+}
+.hat{
+    width: 100%;
+    height: calc(3.1vw + 4.3vh);  
+    top: 0px;
+    left: 0px;  
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: calc(0.8vw + 1.2vh) calc(2.8vw + 3.9vh);
+    overflow: visible;
+    white-space: nowrap;
+}
+.logo{
+    height: calc(1vw + 1.5vh);
+}
+
+.hat-wrapper{
+    height: calc(3.1vw + 4.3vh);  
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: calc(12.5vw + 17.6vh);
+}
+
+.urls-frame{
+    width: calc(27.9vw + 38vh);
+    height: calc(1.4vw + 2vh);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: calc(0.8vw + 1.2vh);
+}
+.urls{
+    width: calc(22.8vw + 33vh);
+    height: calc(1vw + 1.4vh);
+    display: flex;
+    gap: calc(0.8vw + 1.1vh);
+}
+.url{
+    display: flex;
+    padding: calc(0.1vw + 0.2vw) calc(0.3vw + 0.4vh);
+    gap: calc(0.3vw + 0.4vh);
+    height: calc(1vw + 1.4vh);
+    align-items: center;
+}
+
+.image-header{
+    width: calc(0.7vw + 0.9vh);
+    height: calc(0.9vh + 0.7vw);
+}
+
+img.image-header.friend{
+    width: calc(0.9vw + 1.1vh);
+    height: calc(0.8vh + 0.6vw);
+}
+
+.url:hover{
+    background-color: rgba(233, 229, 238, 1);
+    border-radius: calc(0.1vw + 0.15vw);
+    cursor: pointer;
+}
+a{
+    height: calc(0.6vw + 0.9vh);
+    margin-top: calc(0.07vw + 0.1vh);
+    font-size: calc(0.5vw + 0.8vh);
+    font-weight: 500;
+    color: rgba(7, 10, 28, 1);
+    text-decoration: none;
+}
+
+.button-exit{
+    width: calc(3.3vw + 4.7vh);
+    height: calc(1.4vw + 2vh);
+    border: calc(0.03vw + 0.05vh) rgba(84, 60, 82, 1) solid;
+    border-radius: 1234px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: calc(0.3vw + 0.4vh);
+    padding: calc(0.3vw + 0.5vh) calc(0.5vw + 0.8vh);   
+    background-color: white;
+}
+
+.exit{
+    color: rgba(84, 60, 82, 1);
+    all: unset;
+    font-family: 'GT Walsheim Pro', sans-serif;
+    font-size: calc(0.5vw + 0.8vh);
+}
+.image-exit{
+    width: calc(0.7vw + 0.8vh);
+    height: calc(0.7vw + 0.8vh);
+}
+.button-exit:hover{
+    background-color: rgba(233, 229, 238, 1);
+    cursor: pointer;
+}
+

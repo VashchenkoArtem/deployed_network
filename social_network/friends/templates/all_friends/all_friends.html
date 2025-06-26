@@ -1,0 +1,141 @@
+{% extends "base_header_main.html" %}
+{% load static %}
+{% load custom_tags %}
+{% block title %}
+    Друзі
+{% endblock %}
+
+{% block link %}
+    <link rel="stylesheet" href="{% static 'friends/css/friends.css' %}">
+{% endblock %}
+
+
+{% block content %}
+    <div class="center">
+        <div class="settings-links">
+            <a href="{% url 'main_friends' %}" class="link two">Головна</a>
+            <a class="link two" href = "{% url 'all_requests' %}">Запити</a>   
+            <a class = "link two" href = "{% url 'recommended' %}">Рекомендації</a>
+            <a class = "link one-friend" href = "{% url 'all_friends' %}">Всі друзі</a>
+        </div>
+        <div class = "all-frames">
+            <div class = "request-card">
+                <div class = "title-card">
+                    <h1 class = "title-h1 h1">Всі друзі</h1>
+                    <a class = "title-watch h1" href = "{% url 'all_friends'%}">Дивитись усі</a>
+                </div>
+                <div class = "all-cards request">
+                    {% for friend in all_friends %}
+                        {% if friend.profile1 == current_user or friend.profile2 == current_user %}
+                        {% if friend.profile1 == current_user %}
+                            <div class = "card" id = "card-friend-{{friend.profile2.user.pk}}">
+                                
+                                <div class = "profile-card">
+                                    {% if friend.profile1 != current_user %}
+                                        {% with author_avatar=author_avatars|get_item:friend.profile1.user.id%}
+                                            {% if author_avatar and author_avatar.image %}
+                                                <img class="post-friend-avatar" src="{{ author_avatar.image.url }}" alt="">
+                                            {% else %}
+                                                <img class="post-friend-avatar" src="{% static 'images/icons/account.png' %}" alt="">
+                                            {% endif %}
+                                        {% endwith %}
+                                    {% elif friend.profile2 != current_user%}
+                                        {% with author_avatar=author_avatars|get_item:friend.profile2.user.id%}
+                                            {% if author_avatar and author_avatar.image %}
+                                                <img class="post-friend-avatar" src="{{ author_avatar.image.url }}" alt="">
+                                            {% else %}
+                                                <img class="post-friend-avatar" src="{% static 'images/icons/account.png' %}" alt="">
+                                            {% endif %}
+                                        {% endwith %}
+                                    {% endif%}
+                                </div>
+                                
+                                    <div class = "card-info">
+                                        {% if friend.profile1 == current_user %}
+                                            <h1 class = "name">{{ friend.profile2.user.first_name }} {{ friend.profile2.user.last_name }}</h1>
+                                            <h1 class = "tag-name">@{{ friend.profile1.user.username }}</h1>
+                                        {% elif friend.profile2 == current_user %}
+                                            <h1 class = "name">{{ friend.profile1.user.first_name }} {{ friend.profile1.user.last_name }}</h1>
+                                            <h1 class = "tag-name">@{{ friend.profile1.user.username }}</h1>                   
+                                        {% endif %}    
+                                    </div>
+                                
+                            
+                                <div class = "card-buttons">
+                                    {% if friend.profile1 != current_user %}
+                                        <a class = "button button-confirm" href = "{% url 'create_chat' friend.profile1.pk %}">
+                                            Повідомлення
+                                        </a>
+                                    {% elif friend.profile2 != current_user %}
+                                        <a class = "button button-confirm" href = "{% url 'create_chat' friend.profile2.pk %}">
+                                            Повідомлення
+                                        </a>
+                                    {% endif  %}
+                                    <a class = "button button-delete-friend" id = "{% url 'delete_friend' friend.profile1.user.pk%}">
+                                        Видалити
+                                    </a>
+                                </div>
+                            </div>
+                        {% elif friend.profile2 == current_user %}
+                            <div class = "card" id = "card-friend-{{friend.profile1.user.pk}}">
+                                
+                                <div class = "profile-card">
+                                    {% if friend.profile1 != current_user %}
+                                        {% with author_avatar=author_avatars|get_item:friend.profile1.user.id%}
+                                            {% if author_avatar and author_avatar.image %}
+                                                <img class="post-friend-avatar" src="{{ author_avatar.image.url }}" alt="">
+                                            {% else %}
+                                                <img class="post-friend-avatar" src="{% static 'images/icons/account.png' %}" alt="">
+                                            {% endif %}
+                                        {% endwith %}
+                                    {% elif friend.profile2 != current_user%}
+                                        {% with author_avatar=author_avatars|get_item:friend.profile2.user.id%}
+                                            {% if author_avatar and author_avatar.image %}
+                                                <img class="post-friend-avatar" src="{{ author_avatar.image.url }}" alt="">
+                                            {% else %}
+                                                <img class="post-friend-avatar" src="{% static 'images/icons/account.png' %}" alt="">
+                                            {% endif %}
+                                        {% endwith %}
+                                    {% endif%}
+                                </div>
+                                
+                                    <div class = "card-info">
+                                        {% if friend.profile1 == current_user %}
+                                            <h1 class = "name">{{ friend.profile2.user.first_name }} {{ friend.profile2.user.last_name }}</h1>
+                                            <h1 class = "tag-name">@{{ friend.profile1.user.username }}</h1>
+                                        {% elif friend.profile2 == current_user %}
+                                            <h1 class = "name">{{ friend.profile1.user.first_name }} {{ friend.profile1.user.last_name }}</h1>
+                                            <h1 class = "tag-name">@{{ friend.profile1.user.username }}</h1>                   
+                                        {% endif %}    
+                                    </div>
+                                
+                            
+                                <div class = "card-buttons">
+                                    {% if friend.profile1 != current_user %}
+                                        <a class = "button button-confirm" href = "{% url 'create_chat' friend.profile1.pk %}">
+                                            Повідомлення
+                                        </a>
+                                    {% elif friend.profile2 != current_user %}
+                                        <a class = "button button-confirm" href = "{% url 'create_chat' friend.profile2.pk %}">
+                                            Повідомлення
+                                        </a>
+                                    {% endif  %}
+                                    <a class = "button button-delete-friend" id = "{% url 'delete_friend' friend.profile1.user.pk%}">
+                                        Видалити
+                                    </a>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        {% endif%}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+{% endblock %}
+{% block script %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src = "{% static 'friends/js/script.js' %}"></script>
+{% endblock %}

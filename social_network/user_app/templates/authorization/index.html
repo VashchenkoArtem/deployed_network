@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    Авторизація
+{% endblock %}
+{% block link %}
+<link rel="stylesheet" href="{% static 'authorithation/css/style.css' %}">
+{% endblock %}
+
+{% block content %} 
+    <div class = "body">
+        <div class = "registration-frame">
+            <div class = "reg-or-log-frame">
+                <a href="{% url 'registration'%}" class = "authorithation-title ">Реєстрація</a>
+                <a href = "{% url 'authorithation'%}" class = "registration-title">Авторизація</a>
+            </div>
+            <h2 class = "join-worldit">Раді тебе бачити знову!</h2>
+            <form method = "post">
+                <div class = "registration-form">
+                    {% csrf_token%}
+                    <div class = "inputs">
+                        {% for field in form %}
+                            <div class = "input">
+                                {{ field.label_tag }}
+                                <div class = "field-container">
+                                    {{ field }}
+                                    <img class = "eye-img"src="{% static 'images/icons/eye.png'%}" id = "{{ field.auto_id }}" alt="">
+                                </div>
+                                {{ field.errors }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <button type = "submit" class="button-login">Увійти</button>
+                </div>
+            </form>
+            <div class = "qr">
+                <div class = "label-qr">
+                    <div class = "line-qr"></div>
+                    <h2 class = "join-qr">Або увійдіть за допомогою QR-коду</h2>
+                    <div class = "line-qr"></div>
+                </div>
+                <img class = "image-qr" src="{% static 'images/icons/qr.png' %}" alt = "">
+            </div>
+        </div>
+        <div class = "background-image">
+            <img class = "image"src="{% static 'images/background/back.png' %}" alt="">
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    <script src = "{% static 'registration/js/script.js'%}"></script>
+{% endblock %}

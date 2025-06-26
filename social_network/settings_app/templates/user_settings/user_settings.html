@@ -1,0 +1,252 @@
+{% extends "base_header_main.html" %}
+{% load static %}
+
+{% block title %}
+    Налаштування
+{% endblock %}
+
+{% block link %}
+    <link rel="stylesheet" href="{% static 'user_settings/css/user_settings.css' %}">
+{% endblock %}
+
+
+{% block content %}
+    <div class="center">
+        <div class="settings-links">
+            <a href="{% url 'user_settings' %}" class="link one">Головна</a>
+            <a href="{% url 'albums' %}" class="link two">Альбоми</a>   
+        </div>
+
+        <div class="main-card">
+            <div class="profile-card default-profile-card">
+                <div class="header-card">
+                    <p>Картка профілю</p>
+                    <button class="edit-photo-button">
+                        <img src="{% static 'user_settings/images/edit.png' %}" alt="" class="edit-img all">
+                        Редагувати інформацію
+                    </button>
+                </div>
+                
+                <div class="main-profile">
+                    {% if my_avatar %}
+                        <img src="{{ my_avatar.image.url }}" alt="" class="user-img">
+                    {% else %}
+                        <img src="{% static 'user_settings/images/account.png' %}" alt="" class="user-img">
+                    {% endif %}
+                    <p class="user-text">{{request.user.first_name}} {{request.user.last_name}}</p>
+                    <p>@{{request.user.username}}</p>
+                </div> 
+                
+            </div>
+            <form method = "post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="profile-card edit-profile-card hidden">
+                    <div class="header-card">
+                        <p>Картка профілю</p>
+                        <button class="edit-info-button hidden">
+                            <img src="{% static 'user_settings/images/edit.png' %}" alt="" class="edit-img all">
+                            Редагувати інформацію
+                        </button>
+                        <button class="save-photo-button" type = "submit">
+                            <img src="{% static 'user_settings/images/edit.png' %}" alt="" class="edit-img all">
+                            Зберегти
+                        </button>
+                    </div>
+                    <div class="main-profile">
+                        <span class = "title-avatar">Оберіть або завантажте фото профілю</span>
+                        {% if my_avatar %}
+                            <img src="{{ my_avatar.image.url }}" alt="" class="user-img redact-user-img" id = "user-img">
+                        {% else %}
+                            <img src="{% static 'user_settings/images/account.png' %}" alt="" class="user-img redact-user-img">
+                        {% endif %}
+                        <div class = "buttons-redact-photo">
+                            <input id = "changeAvatar" class = "change-avatar hidden" accept = 'image/*' name = "avatar" type = "file">
+                            <label for="changeAvatar" class = "label-redact">
+                                <img class = "edit-img all" src="{% static 'user_settings/images/plus.png' %}" alt="">
+                                <span class = "choose-photo">Оберіть фото</span>
+                            </label>
+                        </div>
+                        <div class = "username-field">
+                            <p class="user-text">{{request.user.first_name}} {{request.user.last_name}}</p>
+                            <div class = "change-username">
+                                <span class = "edit-text">Ім'я користувача</span>
+                                <input type="text" value = "{{ request.user.username }}" class = "input-edit" name = "username">
+                            </div> 
+                        </div>
+                    </div>
+                    
+                </div>
+            </form>
+            <form action="{% url 'check_info' request.user.pk %}" method = "post">
+                <div class = "screen"></div>
+                {% csrf_token %}
+                <div class="personal-information-card">
+                    
+                    <div class="header-card">
+                        <p>Особиста інформація</p>
+                        <button class="edit-info-button edit-2" type="button">
+                            <img src="{% static 'user_settings/images/edit.png' %}" alt="" class="edit-img all">
+                            Редагувати інформацію
+                        </button>
+                        <button class="save-info-button hidden" type = "submit">
+                            <img src="{% static 'user_settings/images/edit.png' %}" alt="" class="edit-img all">
+                            Зберегти
+                        </button>
+                    </div>
+                    <div class="edit-info-main">
+                        
+                        <div class="little-div-edit">
+                            <p class="edit-text">Ім'я</p>
+                            <div class="input-div-edit">
+                                <input type="text" class="input-edit" value="{{request.user.first_name}}" name = "first_name" id = "0">
+                                <img src="{% static 'user_settings/images/eye.png' %}" alt="" id = "0" class="eye-img all">
+                            </div>
+                        </div>
+                        <div class="little-div-edit">
+                            <p class="edit-text">Прізвище</p>
+                            <div class="input-div-edit">
+                                <input type="text" class="input-edit" value="{{request.user.last_name}}" name = "last_name" id = "1">
+                                <img src="{% static 'user_settings/images/eye.png' %}" alt="" id = "1" class="eye-img all">
+                            </div>
+                        </div>
+
+                        <div class="little-div-edit">
+                            <p class="edit-text">Дата народження</p>
+                            <div class="input-div-edit">
+                                <input type="text" class="input-edit" placeholder="add your date" name = "birthday" id = "2">
+                                <img src="{% static 'user_settings/images/eye_close.png' %}" alt="" id = "2" class="eye-img all">
+                            </div>
+                        </div>
+                        <div class="little-div-edit">
+                            <p class="edit-text">Електронна адреса</p>
+                            <div class="input-div-edit">
+                                <input type="text" class="input-edit" value="{{request.user.email}}" name = "email" id = "3">
+                                <img src="{% static 'user_settings/images/eye_close.png' %}" alt="" id = "3" class="eye-img all">
+                            </div>
+                        </div>
+                        </form>
+                            <div class="passwords-div">
+                                <div class="header-card">
+                                    <p class="password-text">Пароль</p>
+
+                                    <button class="edit-info-button password" id="editPasswordButton" type="button">
+                                        <img src="{% static 'user_settings/images/edit.png' %}" alt="" class="edit-img all">
+                                        Редагувати пароль
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="input-div-edit-password">
+                                <input type="text" class="input-edit password" placeholder="⁕⁕⁕⁕⁕⁕⁕⁕⁕⁕" id = "4">
+                                <img src="{% static 'user_settings/images/eye_password.png' %}" alt="" id = "4" class="eye-img password">
+                            </div>
+                            <div class = "edit-password-div hidden">
+                                <form action="" method = "post">
+                                    {% csrf_token %}
+                                    <input type="hidden" value="" name = "hidden_input" id="hiddenInput">
+                                    <div class = "header-card">
+                                        <p class="edit-text"></p>
+                                        <button class="edit-save-password password" id="editPasswordButton" type = "submit">
+                                            <img src="{% static 'user_settings/images/edit.png' %}" alt="" class="edit-img all">
+                                            Змінити пароль
+                                        </button>
+                                    </div> 
+                                    <div class="edit-password">
+                                        <label class="" class="new-password-label">
+                                            <p class="new-password-text">Новий пароль</p>
+                                        </label>
+                                        <div class="input-div-edit-password">
+                                            <input type="text" class="input-edit password" name = "password" placeholder="⁕⁕⁕⁕⁕⁕⁕⁕⁕⁕" id = "4">
+                                            <img src="{% static 'user_settings/images/eye_password.png' %}" alt="" id = "4" class="eye-img password">
+                                        </div>
+                                        <label for="" class="label-confirm-password">
+                                            <p>Підтвердіть новий пароль</p>
+                                        </label>
+                                        
+                                        <div class="input-div-edit-password">
+                                            <input type="text" class="input-edit password" name = "confirm_password" placeholder="⁕⁕⁕⁕⁕⁕⁕⁕⁕⁕" id = "4">
+                                            <img src="{% static 'user_settings/images/eye_password.png' %}" alt="" id = "4" class="eye-img password">
+                                        </div>
+                                    </div>
+                                    <div class="dark-for-modal hidden-modal" id = "darkModal">
+                                        <div class="modal-password hidden-modal" id="modalWindowPassword">
+                                            <form action="" method = "post">
+                                                <div class="close-window-div">
+                                                    <img src="{% static 'user_settings/images/close.png' %}" id="closeButton" class="close-button">
+                                                </div>
+
+                                                <div class="text-password-remake">
+                                                    <p class="text-remade-one">Підтвердження для зміни паролю</p>
+                                                    <div class="two-text">
+                                                        <p class="text-remade-two">Ми надіслали 6-значний код на вашу пошту (you@example.com). Введіть його нижче, щоб підтвердити акаунт</p>
+                                                    </div>
+                                                    
+                                                </div>
+
+                                                <div class="main-password-content">
+                                                    <p class="text-remade-two">Код підтвердження</p>
+                                                    <div class="div-inputs">
+                                                        <div class="mini-input-group">
+                                                            <input type="number"  name = "input1"  class="mini-input">
+                                                            <input type="number"  name = "input2" class="mini-input">
+                                                        </div>
+
+                                                        <div class="mini-input-group">
+                                                            <input type="number" name = "input3" class="mini-input">
+                                                            <input type="number" name = "input4" class="mini-input">
+                                                        </div>
+
+                                                        <div class="mini-input-group">
+                                                            <input type="number" name = "input5" class="mini-input">
+                                                            <input type="number" name = "input6" class="mini-input">
+                                                        </div>
+                                                        
+                                                    </div>
+                                                    
+                                                </div>
+
+                                                <div class="buttons">
+                                                    <button class="cancel-button" id = "cancelButton">Скасувати</button>
+                                                    <button class="save-button" type="submit">Підтвердити</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                    </div>
+                </div>
+            <div class="signature-option-card">
+                <div class="header-card">
+                    <p>Варіанти підпису</p>
+                    <button class="edit-info-button">
+                        <img src="{% static 'user_settings/images/edit.png' %}" alt="" class="edit-img all">
+                        Редагувати інформацію
+                    </button>
+                </div>
+                <div class="signature-options">
+                    <div class="first-signature-one">
+                        <input type="checkbox" name="" id="check1" class="checkbox" checked>
+                        <p class="name-surname">Ім'я та прізвище</p>
+                    </div>
+                    <p style="margin-top: calc(0.4vw + 0.6vh);">Lina Li</p>
+                    <div class="second-signature-two">
+                        <input type="checkbox" name="" id="" class="checkbox" checked>
+                        <p class="name-surname">Мій електронний підпис</p>
+                    </div>
+                    <div class="signature-img-div">
+                        <img src="{% static 'user_settings/images/signature.png' %}" alt="" class="signature-img">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+
+
+    
+{% endblock %}
+{% block script %}
+    <script src = "{% static 'user_settings/js/scripts.js'%}"></script>
+{% endblock %}

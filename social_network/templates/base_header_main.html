@@ -1,0 +1,59 @@
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="icon" href="{% static 'images/icons/WIA_favicon.png'%}" class = "favicon-icon" type = "image/x-icon">
+    <link rel="stylesheet" href="{% static 'css/base_header_main.css'%}">
+    {% block link %}
+    {% endblock %}
+</head>
+    <body>
+        <div class = "hat">
+            <div class="hat-wrapper">
+                {% block hat %}
+                    <img class = "logo" src="{% static 'images/icons/logo.png'%}" alt="" class="image-header">
+                    <div class = "urls-frame">
+                        <div class = "urls">
+                            <a href = "{% url 'main' %}" class = "main url">
+                                <img src="{% static 'images/icons/house.png'%}" alt="" class="image-header">
+                                <span class = "span-url">Головна</span>
+                            </a>
+                            <a href = "{% url 'my_pubs' %}" class = "url posts-url">
+                                <img src="{% static 'images/icons/post.png' %}" alt="" class="image-header">
+                                <span class = "span-url" >Мої публікації</span>
+                            </a>
+                            <a href = "{% url 'main_friends'%}" class = "url friends">
+                                <img src="{% static 'images/friends.png' %}" alt="" class="image-header friend">
+                                <span class = "span-url" >Друзі</span>
+                            </a>
+                            <a href = "{% url 'all_chats'%}" class = "url chats">
+                                <img src="{% static 'images/icons/chats.png' %}" alt="" class="image-header">
+                                <span class = "span-url">Чати</span>
+                            </a>
+                            <a href="{% url 'user_settings' %}" class = "url settings">
+                                <img src="{% static 'images/icons/settings.png' %}" alt="" class="image-header">
+                                <span class = "span-url">Налаштування</span>
+                            </a>
+                        </div>
+                        <form action="{% url 'logout' %}" method = "post">
+                            {% csrf_token%}
+                            <button class = "button-exit">
+                                <img class = "image-exit"src="{% static 'images/icons/exit.png'%}" alt="">
+                                <h1 type="submit" class = "exit">Вихід</h1>
+                            </button>
+                        </form>
+                    </div>
+                {% endblock %}
+            </div>
+        </div>
+
+
+        {% block content %}
+        {% endblock %}
+
+        {% block script %}
+        {% endblock %}
+    </body>
+</html>

@@ -1,0 +1,166 @@
+{% extends 'base_header_main.html' %}
+{% load static %}
+
+{% block title %}
+    Сторінка друга
+{% endblock %}
+
+{% block link %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'friends/css/friends.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class = "body">
+        <div class = "profile-frame">
+
+            <div class = "frame profile">
+                <div class = "avatar">
+                    {% if avatar %}
+                        <img class = "my-avatar" src="{{ avatar.image.url }}" alt="">
+                    {% else %}
+                        <img class = "my-avatar" src="{% static 'images/icons/account.png' %}" alt="">
+                    {% endif %}
+                </div>
+
+                <div class = "nick-and-tag">
+                    <h2 class = "name">{{ friend.user.first_name }} {{friend.user.last_name}}</h2>
+                    <h3 class = "tag">@{{ friend }}</h3>
+                </div>
+
+                <div class = "subscribers" >
+                    <div class = "all-posts section">
+                        <h2 class = "number">{{ posts_count }}</h2>
+                        <h3 class = "info">Дописи</h3>  
+                    </div>
+                    <div class = "followers section">
+                        <h2 class = "number">{{ all_views.count}}</h2>
+                        <h3 class = "info">Читачі</h3>
+                    </div>
+                    <div class = "all-friends section">
+                        <h2 class = "number">{{ my_friends.count }}</h2>
+                        <h3 class = "info">Друзі</h3>
+                    </div>
+                </div>                
+                {% if not current_request.accepted %}
+                <div class="confirm-delete-div">
+                    <a class="add-button button" id = "{% url 'confirm_friend' friend.user.pk %}">Підтвердити</a>
+                    <a class = "button button-delete" id = "{% url 'delete_request' friend.user.pk %}" href = "{% url 'main_friends'%}">
+                        Видалити
+                    </a>
+                </div>
+                {% endif%}
+            </div>
+            <div class = "frame request  cards-album">
+                <div class = "title-frame first">
+                    <div class = "logo-frame">
+                        <div class = "icon">
+                            <img class = "icon-people-request" src="{% static 'images/icons/albums.png'%}" alt="">
+                        </div>
+                        <h3 class = "description-block">Альбоми</h3>
+                    </div>
+                    <div class = "button-frame">
+                        <h3>Дивитись всі</h3>
+                    </div>
+                </div>  
+                <div class = "all-albums">
+                    {% for album in all_albums %}
+                        <div class="album">
+                            <span class="span-album text-album">{{ album.name }}</span>
+                            <div class="container-album">
+                                <span class="span-album text-album">{{ album.topic }}</span>
+                                <span class="span-date text-album">2025 рік</span>
+                            </div>
+                            {% if album.images.all %}
+                                <img  src="{{album.images.all.first.file.url}}" alt="" class="album-image">
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>     
+        </div>
+        
+        <div class = "wrapper-body">
+            <div class = "posts-wrapper">
+                    <div class = "posts">
+                        {% for post in all_posts %}
+                            <div class = "social-media-post">
+                                <div class = "people-information-post">
+                                    <div class = "avatar-label">
+                                        <div class = "people-logo-and-nick">
+                                            <div class = "logo-post">
+                                                {% if avatar %}
+                                                    <img class = "post-friend-avatar-mini" src="{{ avatar.image.url }}" alt="">
+                                                {% else %}
+                                                    <img class = "post-friend-avatar-mini" src="{% static 'images/icons/account.png' %}" alt="">
+                                                {% endif %}
+                                            </div>
+                                            <div class = "nick-post">
+                                                <h2 class = "nick-friend">{{post.author}}</h2>
+                                            </div>
+                                        </div>
+                                        <div class = "signature">
+                                                <img src="" alt="">
+                                        </div>
+
+                                    </div>
+                                    <div class = "dots dots-post">
+                                        <img class = "dot" src="" alt="">
+                                    </div>         
+                                    </div>
+                            
+                                    <div class = "body-post">
+                                        <h2 class = "title-post">{{post.title}}</h2>
+                                        <h3 class = "description-post">{{post.content}}</h3>
+                                        {% if post.tags.all %}
+                                        <div class = "hashtags">
+                                            
+                                            {% for tag in post.tags.all %}
+                                            <h1 class = "hashtag">{{tag.name}}</h1>
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                        
+                                        {% for url in all_urls %}
+                                            {% if url.post == post %}
+                                            <div class = "url-post">
+                                                <a href = "{{ url.url }}" target="_blank" class = "url-post">{{ url.url}}</a>
+                                            </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                        <div class="photos ">
+                                            {% for img in post.images.all %}
+                                            <img src="{{ img.file.url }}" class="image photos-{{ post.images.all|length }} number-{{forloop.counter}}"   >
+                                            {% endfor %}
+                                        </div>
+                                        <div class = "reviews">
+                                            <div class = "review">
+                                                <a class = "icon-review icon-like {{post.pk}}" id ="{% url 'get_likes' post.pk %}" >
+                                                    <img class = "likes-icon likes-icon-click" src="{% static 'images/icons/Like.png'%}" alt="">
+                                                </a>
+                                                 <h2 class = "likes likes-title"><span id = "likesPost-{{post.pk}}">{{ post.likes.count }}</span> Вподобайок</h2>
+                                            </div>
+                                            <div class = "review">
+                                                <div class = "icon-review">
+                                                    <img class = "likes-icon" src="{% static 'images/icons/eye.png'%}" alt="">
+                                                </div>
+                                                <h2 class = "likes">{{ post.views.count }} Переглядів</h2>
+                                            </div>
+                                        </div>
+                                    </div>
+                            </div>
+                        {% empty %}
+                            <div class = "empty-posts">
+                                <h1 class = "empty-h1">Користувач не зробив ще не одного поста...</h1>
+                            </div>
+                        {% endfor %}
+                    </div>    
+            </div>
+        </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src = "{% static 'friends/js/script.js' %}"></script>
+{% endblock %}

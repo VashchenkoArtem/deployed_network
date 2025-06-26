@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load static%}
+
+{% block title %}
+     Реєстрація 
+{% endblock %}
+
+{% block link %}
+    <link rel="stylesheet" href="{% static 'registration/css/style.css' %}">
+{% endblock %}
+
+{% block content %} 
+    <div class = "body">
+        <div class = "registration-frame">
+            <div class = "reg-or-log-frame">
+                <a href="{% url 'registration'%}" class = "registration-title">Реєстрація</a>
+                <a href = "{% url 'authorithation'%}" class = "authorithation-title">Авторизація</a>
+                <div class = "line"></div>
+            </div>
+            <h2 class = "join-worldit">Приєднуйся до WorldIT</h2>
+            <form method = "post">
+                <div class = "registration-form">
+                    {% csrf_token%}
+                    <div class = "inputs">
+                        {% for field in form %}
+                            {% if field.name != "username" %}
+                                <div class = "input">
+                                    {{ field.label_tag }}
+                                    <div class = "field-container">
+                                        {{ field }}
+                                        <img class = "eye-img"src="{% static 'images/icons/eye.png'%}" id = "{{ field.auto_id }}" alt="">
+                                    </div>
+                                    {{ field.errors }}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <button type = "submit">Створити акаунт</button>
+                </div>
+            </form>
+        </div>
+        <div class = "background-image">
+            <img class = "image"src="{% static 'images/background/back.png' %}" alt="">
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    <script src = "{% static 'registration/js/script.js'%}"></script>
+{% endblock %}

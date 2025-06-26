@@ -1,0 +1,80 @@
+{% extends "base_header_main.html" %}
+{% load static %}
+{% load custom_tags%}
+{% block title %}
+    Друзі
+{% endblock %}
+
+{% block link %}
+    <link rel="stylesheet" href="{% static 'friends/css/friends.css' %}">
+{% endblock %}
+
+
+{% block content %}
+    <div class="center">
+        <div class="settings-links">
+            <a href="{% url 'main_friends' %}" class="link two">Головна</a>
+            <a class="link one" href = "{% url 'all_requests' %}">Запити</a> 
+            <a class = "link two" href = "{% url 'recommended' %}">Рекомендації</a>
+            <a class = "link two-friend" href = "{% url 'all_friends' %}">Всі друзі</a>
+        </div>
+        <div class = "all-frames">
+            <div class = "request-card">
+                <div class = "title-card">
+                    <h1 class = "title-h1 h1">Запити</h1>
+                    <a class = "title-watch h1" href = "{% url 'all_requests'%}">Дивитись усі</a>
+                </div>
+                    
+                
+                <div class = "all-cards request">
+                    {% for request in all_requests %}
+                        {% if not request.accepted %}
+                            <div class = "deleting-confirming hidden" id = "{{request.profile1.user.pk}}">
+                                    <h1 class = "confirm-action">Підтвердити дію</h1>
+                                    <h3 class = "question-deleting">Ви дійсно хочете видалити користувача?</h3>
+                                    <div class = "confirming-buttons">
+                                        <a class = "button-cancel">
+                                            Скасувати
+                                        </a>
+                                        <a class = "button button-confirm-deleting button-delete" id = "{% url 'delete_request' request.profile1.user.pk %}">
+                                            Підтвердити
+                                        </a>
+                                    </div>
+                            </div>
+                            <div class = "fullscreen hidden"></div>
+                            <div class = "card" id = "card-request-{{request.profile1.user.pk}}">
+                                    <div class = "profile-card">
+                                        <a href="{% url 'friend_profile' request.profile1.user.pk %}" class = "avatar">
+                                            {% with author_avatar=author_avatars|get_item:request.profile1.user.id%}
+                                                {% if author_avatar and author_avatar.image %}
+                                                    <img class="post-friend-avatar" src="{{ author_avatar.image.url }}" alt="">
+                                                {% else %}
+                                                    <img class="post-friend-avatar" src="{% static 'images/icons/account.png' %}" alt="">
+                                                {% endif %}
+                                            {% endwith %}
+                                        </a>
+                                    </div>
+                                    <div class = "card-info">
+                                        <h1 class = "name">{{request.profile1.user.first_name}} {{request.profile1.user.last_name}}</h1>
+                                        <h1 class = "tag-name">@{{request.profile1.user.username}}</h1>
+                                    </div>
+                        
+                                    <div class = "card-buttons">
+                                        <a class = "button button-confirm" href="{% url 'friend_profile' request.profile1.user.pk %}">
+                                            Підтвердити
+                                        </a>
+                                        <a class = "button button-delete" id = "{% url 'delete_request' request.profile1.user.pk %}">
+                                            Видалити
+                                        </a>
+                                    </div>
+                            </div>
+                        {% endif%}
+                    {% endfor %}
+                </div>
+            </div>
+            </div>
+{% endblock %}
+{% block script %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src = "{% static 'friends/js/script.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="icon" href="images/WIA_favicon.png">
+    <link rel="stylesheet" href="{% static 'css/base.css'%}">
+    {% block link %}
+    {% endblock %}
+</head>
+<body>
+    
+        <div class = "hat">
+            <div class="hat-wrapper">
+                <img class = "logo" src="{% static 'images/icons/logo.png'%}" alt="">
+                {% block hat %}
+                {% endblock%}
+            </div>
+        </div>
+
+    {% block content %}
+    {% endblock %}
+    {% block script %}
+    {% endblock %}
+</body>
+</html>

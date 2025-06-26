@@ -1,0 +1,202 @@
+{% extends "base_header_main.html" %}
+{% load static %}
+
+{% block title %}
+    Альбоми
+{% endblock %}
+
+{% block link %}
+    <link rel="stylesheet" href="{% static 'albums/css/albums.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="center">
+        <div class="settings-links">
+            <a href="{% url 'user_settings' %}" class="link one">Головна</a>
+            <a href="{% url 'albums' %}" class="link two">Альбоми</a>
+        </div>
+
+        <div class="main-card">
+            <div class="albums">
+                <div class="header-card">
+                    <p class = "title">Мої фото</p>
+                    <a href = "{% url 'user_settings'%}" class="add-photo-button"><img src="{% static 'albums/images/photo.png' %}" alt="" class="photo-add">Додати фото</a>
+                </div>
+                <div class="content-photos">
+                    {% for avatar in my_avatars %}
+                        <div class="photo">
+                            <img src="{{ avatar.image.url }}" alt="" class="img-card">
+                            <div class="edit-image">
+                                <button class="mini-buttons"><img src="{% static 'albums/images/delete.png' %}" alt="" class="mini-icons"></button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="albums">
+                <div class="header-card">
+                    {% if not all_albums %}
+                        <p>Немає ще жодного альбому</p>
+                    {% else %}
+                        <p></p>
+                    {% endif %}
+                    <button class="add-photo-button two" id="createAlbumButton"><img src="{% static 'albums/images/add.png' %}" alt="" class="photo-add">Створити альбом</button>
+                </div>
+                {% for album in all_albums %}
+                    <div class="hidden center-window" id="centerRedactAlbum">
+                        <form method = "post" action="{% url 'edit_album' album.pk %}">
+                            {% csrf_token %}
+
+                            <div class="hidden window" id="windowRedactAlbum">
+                                <div class="cross-div">
+                                    <img src="{% static 'albums/images/close.png' %}" alt="" id="crossButtonRedact" class="cross">
+                                </div>
+                                <h1>Редагувати альбом</h1>
+                                <div class="inputs-div">
+                                    <div class="input-div">
+                                        {% for field in form %}
+                                            {% if field.name == "name" %}
+                                                <p>Назва альбому</p>
+                                                <input type="text" name = "{{field.name}}" value = "{{album.name}}">
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <div class="input-div">
+                                        {% for field in form %}
+                                            {% if field.name == "topic" %}
+                                            <p>Оберіть тему</p>
+                                            <select name="{{ field.name }}">
+                                                {% for tag in all_tags %}
+                                                    <option value="{{ tag.id }}">
+                                                        {{ tag.name }}
+                                                    </option>
+                                                    {% if tag.id == album.topic.id %}
+                                                    <option value="{{ tag.id }}" selected   >
+                                                        {{ tag.name }}
+                                                    </option>
+                                                    {% endif  %}
+                                                {% endfor %}
+                                            </select>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <div class="input-div">
+                                        <p>Рік альбому</p>
+                                        <select name="" id="">
+                                            <option value="1">2025</option>
+                                            <option value="2">2024</option>
+                                            <option value="3">2023</option>
+                                            <option value="4">2022</option>
+                                            <option value="5">2021</option>
+                                            <option value="6">2020</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="buttons-album">
+                                    <a class="cancel-button" id = "cancelButtonRedact">Скасувати</a>
+                                    <button class="save-button" type="submit">Зберегти</button>
+                                </div>
+                                
+                                
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class = "album">
+                        <div class = "name-and-dots">
+                            
+                            <span class = "name">{{ album.name }}</span>
+                            <div class = "eye-and-dots">
+                                <img class = "eye" src="{% static 'albums/images/eye_album.png' %}" alt="">
+                                <img class = "dots" src="{% static 'albums/images/dots.png'%}" alt="">
+                            </div>
+                        </div>
+                        <div class = "topic-and-year">
+                            <span class = "topic">{{album.topic}}</span>
+                            <span class = "created_at">{{album.created_at}}</span>
+                        </div>
+                        <div class = "line"></div>
+                        <form method = "post" id = "photo-form-{{ album.pk }}" enctype="multipart/form-data">
+                            <div class = "album-photos">
+                                {% csrf_token %}
+                                <input type="hidden" value="{{album.pk}}" name = "album_pk">
+                                <span class = "title">Фотографії</span>
+                                <div class = "photos-container">
+                                    {% for image in album.images.all %}
+                                        <div class = "photo-buttons">
+                                            <img class = "image-album" src="{{ image.file.url }}" alt="">
+                                        </div>
+                                    {% endfor %}
+                                    <input type="file" multiple name="photos" class="photos hidden" id="photos-{{ album.pk }}" onchange="document.getElementById('photo-form-{{ album.pk }}').submit()">
+                                    <label for="photos-{{ album.pk }}">
+                                        <img src="{% static 'albums/images/add_photo.png'%}" alt="">
+                                    </label>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                {% endfor %}
+            </div>  
+
+        </div>
+        
+    </div>
+    
+    
+    <div class="hidden center-window" id="centerAddAlbum">
+        <form method = "post">
+            {% csrf_token %}
+            <div class="hidden window" id="windowAddAlbum">
+                <div class="cross-div">
+                    <img src="{% static 'albums/images/close.png' %}" alt="" id="crossButton" class="cross">
+                </div>
+                <h1>Створити альбом</h1>
+                <div class="inputs-div">
+                    <div class="input-div">
+                        {% for field in form %}
+                            {% if field.name == "name" %}
+                                <p>Назва альбому</p>
+                                {{ field }}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <div class="input-div">
+                        {% for field in form %}
+                            {% if field.name == "topic" %}
+                                <p>Оберіть тему</p>
+                                {{ field }}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <div class="input-div">
+                        <p>Рік альбому</p>
+                        <select name="" id="">
+                            <option value="1">2025</option>
+                            <option value="2">2024</option>
+                            <option value="3">2023</option>
+                            <option value="4">2022</option>
+                            <option value="5">2021</option>
+                            <option value="6">2020</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="buttons-album">
+                    <button class="cancel-button" id = "cancelButton">Скасувати</button>
+                    <button class="save-button" type="submit">Підтвердити</button>
+                </div>
+                
+                
+            </div>
+        </form>
+    </div>
+
+
+
+{% endblock %}
+
+{% block script %}
+    <script src = "{% static 'albums/js/album.js' %}"></script>
+{% endblock %}

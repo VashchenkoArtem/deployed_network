@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+
+{% block link %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% endblock %}
+    
+
+<div class="center">
+    <div class="dop-form-edit">
+
+        <form method="post" class = "input-form" enctype="multipart/form-data" style="background-color: white;">
+            {% csrf_token %}
+            <h2 class = "title-redact">Редагування</h2>
+            {% for field in form %}
+                {% if field.name == 'picture' %}
+                    <div class="label-tag">
+                        {{ field.label_tag }}
+                        <div class="inputs-photo-emoji-form">
+                            <div class="emojy-and-photo">
+                                <input type="file" name="picture" id="image-to-post-form" class = "image-to-post-form">
+                                
+                                <label for="image-to-post-form" class = "image-icon-form-label">
+                                    <img class="image-icon-form" src="{% static 'images/icons/icon-image.png' %}" alt="">
+                                </label>
+
+                                <img src="{% static 'images/icons/emoji.png' %}" alt="">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field-error">{{ field.errors }}</div>
+                {% else %}
+                    <div class="inputs-form">
+                        <div class="label-tag">{{ field.label_tag }}</div>
+                        <div class="field {{field.name}}">{{ field }}</div>
+                        <div class="field-error">{{ field.errors }}</div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+            <button class="button-upload-form" type="submit">
+                <h4 class="upload-title">Публікація</h4>
+                <img class = "planer-image" src="{% static 'images/icons/PlaneR.png' %}" alt="">
+            </button>
+        {% for field in form %}
+            {{ field.label_tag }}
+            {{ field }}
+            {{ field.errors }}
+        {% endfor %}
+        <button style="margin-top: 50px;">Редагувати</button>
+    </form>
+    </div>
+    
+</div>
+    
+{% endblock %}

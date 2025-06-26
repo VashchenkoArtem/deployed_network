@@ -1,0 +1,367 @@
+*{
+    scrollbar-width: none;  
+}
+body{
+    overflow-y: hidden;
+}
+.body{
+    display: flex;
+    padding: calc(0.5vw + 0.8vh) calc(2.8vw + 3.9vh);
+    gap: calc(0.3vw + 0.4vh);
+    margin-bottom: calc(0.7vw + 1vh);
+    height: calc(26vw + 35vh);
+    justify-content: center;
+    width: 100%;
+
+}
+.all-contacts{
+    width: calc(12.2vw + 17.2vh);
+    border-radius: calc();
+    display: flex;
+    flex-direction: column;
+    gap: calc(0.3vw + 0.5vh);
+}
+.add-chat{
+    width: calc(12.2vw + 17.2vh);
+    height: calc(1.4vw + 2vh);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(84, 60, 82, 1);
+    border-radius: 1234px;
+    border: calc(0.03vw + 0.05vh) black solid;
+    gap: calc(0.3vw + 0.5vh);
+}
+.icon-image{
+    width: calc(0.7vw + 1vh);
+    height: calc(0.7vw + 1vh);
+}
+.button-title{
+    color: white;
+    font-size: calc(0.5vw + 0.7vh);
+}
+.add-chat:hover{
+    background-color: rgb(77, 57, 76);
+    cursor: pointer;
+}
+.contacts{
+    background-color: white;
+    border-radius: calc(0.3vw + 0.5vh);
+    padding: calc(0.5vw + 0.8vh) calc(0.5vw + 0.8vh);
+    display: flex;
+    flex-direction: column;
+    gap: calc(0.8vw + 1.2vh);
+    align-items: center;
+    height: calc(23vw + 32vh);
+}
+.title-contacts{
+    display: flex;
+    gap: calc(0.3vw + 0.5vh);
+    width: calc(11vw + 15.6vh);
+}
+.contact-span{
+    font-size: calc(0.7vw + 1vh);
+    color: rgba(129, 129, 141, 1);
+}
+::placeholder{
+    font-size: calc(0.5vw + 0.7vh);
+}
+.seacrh-input:focus{
+    border: calc(0.03vw + 0.05vh) rgba(205, 206, 210, 1) solid;
+}
+.field-container{
+    display: flex;
+}
+.seacrh-input{
+    width: calc(11vw + 15.6vh);
+    height: calc(1.5vw + 2.1vh);
+    border: calc(0.03vw + 0.05vh) rgba(205, 206, 210, 1) solid;
+    border-radius: calc(0.3vw + 0.5vh);
+    padding-left: calc(1.6vw + 2.3vh);
+    color: rgba(129, 129, 141, 1);
+}
+.search-image{
+    position: absolute;
+    margin-left: calc(0.5vw + 0.8vh);
+    margin-top: calc(0.4vw + 0.5vh);
+}
+.contact{
+    height: calc(1.6vw + 2.3vh);
+    width:calc(11vw + 15.6vh);
+    display: flex;
+    align-items: center;
+    gap: calc(0.4vw + 0.6vh);
+    border-radius: calc(0.2vw + 0.4vh);
+}
+.contact:hover{
+    cursor: pointer;
+}
+.people-avatar{
+    width: calc(1.6vw + 2.3vh);
+    height: calc(1.6vw + 2.3vh);
+    border-radius: 1234px;
+}
+.people-name{
+    font-size: calc(0.5vw + 0.8vh);
+}
+.people-contacts{
+    max-height: calc(23.1vw + 32.6vh);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: calc(0.5vw + 0.8vh);
+}
+.people-chat{
+    width: calc(19.6vw + 27.6vh);
+    background-color: white;
+    border-radius: calc(0.3vw + 0.5vh);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+.new-chat{
+    width: calc(18.5vw + 26vh);
+    height: calc(3vw + 4.3vh);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: calc(0.8vw + 1.2vh)
+}
+.title-chat{
+    font-size: calc(0.8vw + 1.2vh);
+}
+.pretitle-chat{
+    font-size: calc(0.5vw + 0.8vh);
+    font-weight: 400;
+    text-align: center;
+}
+.frames{
+    display: flex;
+    flex-direction: column;
+    gap: calc(0.3vw + 0.5vh);
+}
+.frame{
+    width: calc(12.2vw + 17.2vh);
+    background-color: white;
+    border: calc(0.03vw + 0.05vh) rgba(205, 206, 210, 1) solid;
+    border-radius: calc(0.3vw + 0.5vh);
+    padding: calc(0.5vw + 0.8vh);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: calc(12.1vw + 17vh);
+    max-height: calc(12.1vw + 17vh);
+}
+.title-frame{
+    height: calc(0.8vw + 1.1vh);
+    width: calc(11vw + 16vh);
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: calc(0.5vw + 0.8vh);
+}
+
+.logo-frame{
+    display: flex;
+    gap: calc(0.3vw + 0.5vh);
+    align-items: center;
+}
+.description-block{
+    color: rgba(129, 129, 141, 1);
+    font-weight: 500;
+    font-size: calc(0.7vw + 1vh);
+}
+.button-frame{
+    font-size: calc(0.5vw + 0.8vh);
+    line-height: 100%;
+    color: rgba(84, 60, 82, 1);
+    font-weight: 500;
+}
+.body-frame{
+    width: calc(11vw + 15.6vh);
+    display: flex;
+
+    flex-direction: column;
+    scrollbar-width: none;  
+    overflow-x: hidden;
+}
+.people-information{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: calc(0.4vw + 0.6vh);
+    align-items: center;
+}
+.icon-people{
+    width: calc(1.5vw + 2.2vh);
+    height: calc(1.5vw + 2.2vh);
+    border-radius: 12345px;
+}
+.people-name-and-message{
+    display: flex;
+    flex-direction: column;
+    gap: calc(0.1vw + 0.2vh);
+    margin-bottom: calc(0.5vw + 0.9vh);
+}
+.people-name-and-time{
+    width: calc(8.3vw + 11.8vh);
+    display: flex;
+    justify-content: space-between;
+}
+.friend-name{
+    font-size: calc(0.5vw + 0.8vh);
+    line-height: 100%;
+}
+.time{
+    font-size: calc(0.4vw + 0.6vh);
+    font-weight: 400;
+    color: rgba(129, 129, 141, 1);
+}
+.one-people{
+    padding: calc(0.3vw + 0.5vh) calc(0.3vw + 0.6vh);
+}
+.one-people:hover{
+    background-color: rgba(233, 229, 238, 1);
+    cursor: pointer;
+}
+.message-friend{
+    font-size: calc(0.48vw + 0.68vh);
+    font-weight: 400;
+    color: rgba(7, 10, 28, 1);
+}
+.chats{
+    background-color: rgba(233, 229, 238, 1);
+    border-radius: calc(0.1vw + 0.1vh);
+}
+.post-friend-avatar{
+    border-radius: 1234px;
+    width: calc(1.5vw + 2.4vh);
+    height: calc(1.5vw + 2.4vh);
+}
+.group-image{
+    width: calc(1.6vw + 2.6vh);
+    height: calc(1.6vw + 2.6vh);
+    border-radius: 1234px;
+}
+.hidden{
+    visibility: hidden;
+    display: none;
+}
+.cross-image:hover{
+    cursor: pointer;
+}
+.fullscreen{
+    width: 100%;
+    height: 100%;
+    top: 0px;
+    left: 0px;
+    background-color: rgba(102, 102, 102, 0.4);
+    position: fixed;
+}
+
+.members-group{
+    width: calc(15vw + 17.2vh);
+    height: calc(11vw + 15vh);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: calc(0.3vw + 0.5vh);
+}
+.member{
+    display: flex;
+    gap: calc(0.4vw + 0.6vh);
+    align-items: center;
+}
+.name-and-delete{
+    display: flex;
+    align-items: center;
+}
+.people-name{
+    width: calc(11.25vw + 15.9vh);
+}
+.button_style{
+    width: calc(17vw + 18vh);
+    height: calc(2.7vw + 4vh);
+    display: flex;
+    justify-content: flex-end;
+    gap: calc(0.5vw + 0.7vh);
+
+}
+.add-avatar{
+    display: flex;
+}
+.title-choose{
+    font-size: calc(0.6vw + 0.8vh);
+    color: rgba(84, 60, 82, 1);
+}
+.avatar-group{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: calc(0.8vw + 1.2vh);
+}
+.cancel-create-group:hover{
+    background-color: rgba(233, 229, 238, 1);
+    cursor: pointer;        
+}
+.confirm-create-group:hover{
+    background-color: rgb(63, 45, 62);;
+    cursor: pointer;        
+}
+.button_down{
+    color: #543C52;
+    font-family: "GT Walsheim Pro";
+    font-size: calc(0.5vw + 0.8vh);
+    border: calc(0.06vw + 0.09vh) solid #543C52;
+    border-radius: 1234px;
+    width: calc(3vw + 4vh);
+    height: calc(1.3vw + 1.9vh);
+    display: flex;
+    justify-content: center;
+    align-items: center;  
+}
+.button_down:hover{
+    background-color: rgba(233, 229, 238, 1);
+    cursor: pointer;
+}
+
+.button_right{
+    color: #FFFFFF;
+    font-family: "GT Walsheim Pro";
+    font-size: calc(0.5vw + 0.8vh);
+    background-color: #543C52;
+    border-radius: 1234px;
+    width: calc(4.7vw + 6.6vh);
+    height: calc(1.3vw + 1.9vh);
+    font-weight: 100% ;
+    border: calc(0.03vw + 0.05vh) black solid;
+} 
+
+
+
+.member{
+    display: flex;
+    width: calc(12.2vw + 17.2vh);
+}
+.form-set-name{
+    display: flex;
+    flex-direction: column;
+    gap: calc(0.8vw + 1.2vh);
+}
+input[type="checkbox"]:hover{
+    cursor: pointer;
+}
+.none-url{
+    all: unset;
+}
+.add-avatar{
+    display: flex;
+    align-items: center;
+}
+.friend-name{
+    max-height: calc(0.6vw + 0.9vh);
+    overflow-x: hidden;
+}

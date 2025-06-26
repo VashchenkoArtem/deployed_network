@@ -1,0 +1,14 @@
+.posts-url{
+    background-color: rgba(233, 229, 238, 1);
+    border-radius: calc(0.1vw + 0.15vw);
+}
+.main{
+    background-color: white;
+}
+.add-tag{
+    width: calc(6.6vw + 9.3vh);
+    height: calc(1vw + 1.4vh);
+}
+.tag-container{
+    align-items: center;
+}

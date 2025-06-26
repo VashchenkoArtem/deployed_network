@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+    Підтвердження реєстрації
+{% endblock %}
+
+{% block link %}
+
+<link rel="stylesheet" href="{% static 'confirm_registration/css/style.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class = "body-page">
+    <form method = "post" class="registration-confirm-form">
+        <h1 class = "title">Підтвердження пошти</h1>
+            <h2 class = "description-title">Ми надіслали 6-значний код на вашу пошту<br> (you@example.com). Введіть його нижче, щоб<br> підтвердити акаунт</h2>
+            
+            <div class = "form">
+                {% csrf_token%}
+                {{ form.as_p }}
+            </div>
+            <div class = "buttons">
+                <button type = "submit">Підтвердити</button>
+                <a href = "{% url 'registration' %}">Назад</a>
+            </div>
+        </form>
+        <div class = "background-image">
+            <img class = "image" src="{% static 'images/background/back.png'%}" alt="">
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'confirm_registration/js/script.js' %}"></script>
+{% endblock %}
