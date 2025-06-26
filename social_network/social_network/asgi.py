@@ -10,10 +10,10 @@ https://docs.djangoproject.com/en/5.2/howto/deployment/asgi/
 import os
 
 from django.core.asgi import get_asgi_application
-from channels.routing import ProtocolTypeRouter, URLRouter
+
 # from channels.auth import AuthMiddlewareStack
-from chat_app.routing import ws_urlpatterns
-from channels.auth import AuthMiddlewareStack
+
+
 
 
 '''
@@ -25,7 +25,9 @@ DJANGO_SETTINGS_MODULE — назва змінної, яка каже Django, я
 
 '''
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'social_network.settings')
-
+from channels.routing import ProtocolTypeRouter, URLRouter
+from chat_app.routing import ws_urlpatterns
+from channels.auth import AuthMiddlewareStack
 # Створюємо змінну application (об'єкт додатку)
 application = ProtocolTypeRouter({
     # При http-запиті викликається стандартна функція get_asgi_application(), яка перенаправить запит в urls.py
