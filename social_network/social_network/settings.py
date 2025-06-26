@@ -87,7 +87,7 @@ TEMPLATES = [
         },
     },
 ]
-
+CSRF_TRUSTED_ORIGINS = ["https://disciplined-peace-production-9ac1.up.railway.app"]
 # ASGI_APPLICATION = 'social_network.asgi.application'
 # CHANNEL_LAYERS = {
 #     "default":{
@@ -121,7 +121,7 @@ DATABASES = {
         'PORT': str(server.local_bind_port)
     }
 }
-CSRF_TRUSTED_ORIGINS = ["https://disciplined-peace-production-9ac1.up.railway.app"]
+
 
 # DATABASES = {
 #     'default': {
