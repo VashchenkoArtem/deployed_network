@@ -36,6 +36,7 @@ ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'daphne',
+    'mysql.connector.django',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
