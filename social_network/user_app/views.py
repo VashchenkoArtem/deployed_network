@@ -21,10 +21,8 @@ class RegistrationView(CreateView):
     # Створюємо функцію post для .
     def post(self, request, *args, **kwargs):
         email = request.POST.get('email') # Отримуємо email, який користувач відправив у формі при реєстрації.
-        if not User.objects.filter(email = email).exists(): # Якщо користувача з такою поштою ще нема.
-            return super().post(request, *args, **kwargs) # Успадковуємо батьківський метод post, щоб продовжити стандартну обробку запиту.
-        else:
-            return redirect("registration") # Або перекидаємо користувача на сторінку реєстрації.
+        if User.objects.filter(email = email).exists(): # Якщо користувача з такою поштою нема.
+            return redirect("registration") # Перекидаємо користувача на сторінку реєстрації.
         
     # Створюємо метод form_valid, який відпрацює після того, як дані у формі будуть валідовані.
     def form_valid(self, form):

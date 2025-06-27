@@ -6,11 +6,12 @@ from django.conf import settings
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    date_of_birth = models.DateField(null = True)   
+    date_of_birth = models.DateField(null = True) 
     signature = models.ImageField(upload_to="images/signatures", blank = True, null = True)
 
     def __str__(self):
         return self.user.username
+    
 class Avatar(models.Model):
     image = models.ImageField(upload_to = "images/avatars")
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
