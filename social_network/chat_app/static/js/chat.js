@@ -41,22 +41,25 @@ socket.addEventListener('message', function(event){
         username.classList.add('message-author');
         messageElem.append(username);
         messageElem.classList.add("author-people");
-        for (let count = 0; count < messageObject["all_avatars"].length; count ++){
-            let ProfileAvatar = messageObject["all_avatars"][count]
-            let profileId = messageObject["profile_id"]
-            if (ProfileAvatar.fields.profile == profileId){
-                avatar.classList.add("avatar-people");
-                avatar.src = "/media/" + ProfileAvatar.fields.image
-                messageWithAvatar.append(avatar)
-
-            }
-                else{
+        if (messageObject["all_avatars"].length){
+            for (let count = 0; count < messageObject["all_avatars"].length; count ++){
+                let ProfileAvatar = messageObject["all_avatars"][count]
+                let profileId = messageObject["profile_id"]
+                if (ProfileAvatar.fields.profile == profileId){
                     avatar.classList.add("avatar-people");
-                    avatar.src = "/static/images/account.png"
+                    avatar.src = "/media/" + ProfileAvatar.fields.image
                     messageWithAvatar.append(avatar)
+
                 }
-        messageWithAvatar.classList.add('message-with-avatar')
-        messageWithAvatar.classList.add('author-people-message')
+                    else{
+                        avatar.classList.add("avatar-people");
+                        avatar.src = "/static/images/account.png"
+                        messageWithAvatar.append(avatar)
+                    }
+            messageWithAvatar.classList.add('message-with-avatar')
+            messageWithAvatar.classList.add('author-people-message')
+        }
+
     }
     }
     else{ 
