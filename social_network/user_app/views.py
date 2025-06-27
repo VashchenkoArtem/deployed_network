@@ -5,13 +5,10 @@ from .forms import VerificationForm, AuthorithationForm, RegistrationForm # Ім
 from django.core.mail import send_mail # Імпортуємо функцію send_mail для відправки gmail-листа користувачеві.
 import random # Імпортуємо random для створення шестизначного коду.
 from django.contrib.auth.models import User # Імпортуємо модель User для створення користувача.
-from user_app.models import VerificationCode # Імпортуємо створені моделі профілю та верифікації.
+from  user_app.models import Profile, VerificationCode # Імпортуємо створені моделі профілю та верифікації.
 from django.contrib.auth import authenticate, login # Імпортуємо функцію authenticate | login для аутентифікації та логіну користувача.
 from django.shortcuts import redirect #
-from user_app.models import Profile
-from datetime import date
-
-
+import datetime
 # Створюємо клас RegistrationView на базі вже створенного CreateView для відображення та логіки сторінки реєстрації.
 class RegistrationView(CreateView):
     form_class = RegistrationForm # Вказуємо форму для роботи з валідними даними.
@@ -21,24 +18,24 @@ class RegistrationView(CreateView):
     # Створюємо функцію post для .
     def post(self, request, *args, **kwargs):
         email = request.POST.get('email') # Отримуємо email, який користувач відправив у формі при реєстрації.
-        if User.objects.filter(email = email).exists(): # Якщо користувача з такою поштою ще нема.
+        if not User.objects.filter(email = email).exists(): # Якщо користувача з такою поштою ще нема.
             return super().post(request, *args, **kwargs) # Успадковуємо батьківський метод post, щоб продовжити стандартну обробку запиту.
         else:
             return redirect("registration") # Або перекидаємо користувача на сторінку реєстрації.
         
     # Створюємо метод form_valid, який відпрацює після того, як дані у формі будуть валідовані.
     def form_valid(self, form):
-        
+        if User.objects.filter(username = "").first():
+            User.objects.get(username = "").delete()
+        response = super().form_valid(form) # Успадковуємо батьківський метод form_valid.
+        response.set_cookie('email', form.cleaned_data['email'], max_age=3600) # Записуємо у cookie валідований email користувача на годину.
         special_code = random.randint(99999, 999999) # Створюємо рандомний шестизначний код для підтвердження особистості.
-        # user_id = User.objects.get(email = form.cleaned_data['email']).id 
         user = form.save() # Зберігаємо у базу даних дані із форми.
         user.username = f"user-{user.pk}" # Додаємо вручну поле username з його id, яке є обов'язковим для бази даних і необов'язковим для реєстрації користувача.
         user.save() # Зберігаємо у базу даних створений username.
-        Profile.objects.create(user = user) # Створюємо профіль на основі даних.
+        Profile.objects.create(user = user, date_of_birth = datetime.datetime.today()) # Створюємо профіль на основі даних.
         VerificationCode.objects.create(username = user.username, code = special_code) # Створюємо та зберігаємо у базу даних шестизначний код.
         # Відправляємо email.
-        response = super().form_valid(form) # Успадковуємо батьківський метод form_valid.
-        response.set_cookie('email', form.cleaned_data['email'], max_age=3600) # Записуємо у cookie валідований email користувача на годину.
         send_mail(
             subject = "Код для підтвердження", # Заголовок листа.
             message = f"Вітаємо!\n ваш код для підтвердження: {special_code}", # Контент листа.
