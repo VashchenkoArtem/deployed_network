@@ -19,34 +19,34 @@ class RegistrationView(CreateView):
     success_url = reverse_lazy("confirm") # Вказуємо подію перекиду на сторінку верифікації після успішної реєстрації користувача.
 
     # Створюємо функцію post для .
-    # def post(self, request, *args, **kwargs):
-    #     email = request.POST.get('email') # Отримуємо email, який користувач відправив у формі при реєстрації.
-    #     if User.objects.filter(email = email).exists(): # Якщо користувача з такою поштою ще нема.
-    #         return super().post(request, *args, **kwargs) # Успадковуємо батьківський метод post, щоб продовжити стандартну обробку запиту.
-    #     else:
-    #         return redirect("registration") # Або перекидаємо користувача на сторінку реєстрації.
+    def post(self, request, *args, **kwargs):
+        email = request.POST.get('email') # Отримуємо email, який користувач відправив у формі при реєстрації.
+        if User.objects.filter(email = email).exists(): # Якщо користувача з такою поштою ще нема.
+            return super().post(request, *args, **kwargs) # Успадковуємо батьківський метод post, щоб продовжити стандартну обробку запиту.
+        else:
+            return redirect("registration") # Або перекидаємо користувача на сторінку реєстрації.
         
     # Створюємо метод form_valid, який відпрацює після того, як дані у формі будуть валідовані.
-    # def form_valid(self, form):
-    #     response = super().form_valid(form) # Успадковуємо батьківський метод form_valid.
-    #     response.set_cookie('email', form.cleaned_data['email'], max_age=3600) # Записуємо у cookie валідований email користувача на годину.
-    #     special_code = random.randint(99999, 999999) # Створюємо рандомний шестизначний код для підтвердження особистості.
-    #     # user_id = User.objects.get(email = form.cleaned_data['email']).id 
-    #     user = form.save() # Зберігаємо у базу даних дані із форми.
-    #     user.username = f"user-{user.pk}" # Додаємо вручну поле username з його id, яке є обов'язковим для бази даних і необов'язковим для реєстрації користувача.
-    #     user.save() # Зберігаємо у базу даних створений username.
-    #     Profile.objects.create(user = user) # Створюємо профіль на основі даних.
-    #     VerificationCode.objects.create(username = user.username, code = special_code) # Створюємо та зберігаємо у базу даних шестизначний код.
-    #     # Відправляємо email.
-    #     send_mail(
-    #         subject = "Код для підтвердження", # Заголовок листа.
-    #         message = f"Вітаємо!\n ваш код для підтвердження: {special_code}", # Контент листа.
-    #         from_email = "qrprojectdjangoteam2@gmail.com", # Email проєкту, від лиця якого надсилається лист.
-    #         recipient_list = [f"{form.cleaned_data['email']}"], # Відправляємо на адресу користувача.
-    #         fail_silently = False # Якщо в процесі відправки листа відбудеться помилка, показати її.
-    #         )
-    #     # Повертаємо response.
-    #     return response
+    def form_valid(self, form):
+        response = super().form_valid(form) # Успадковуємо батьківський метод form_valid.
+        response.set_cookie('email', form.cleaned_data['email'], max_age=3600) # Записуємо у cookie валідований email користувача на годину.
+        special_code = random.randint(99999, 999999) # Створюємо рандомний шестизначний код для підтвердження особистості.
+        # user_id = User.objects.get(email = form.cleaned_data['email']).id 
+        user = form.save() # Зберігаємо у базу даних дані із форми.
+        user.username = f"user-12345" # Додаємо вручну поле username з його id, яке є обов'язковим для бази даних і необов'язковим для реєстрації користувача.
+        user.save() # Зберігаємо у базу даних створений username.
+        Profile.objects.create(user = user) # Створюємо профіль на основі даних.
+        VerificationCode.objects.create(username = user.username, code = special_code) # Створюємо та зберігаємо у базу даних шестизначний код.
+        # Відправляємо email.
+        send_mail(
+            subject = "Код для підтвердження", # Заголовок листа.
+            message = f"Вітаємо!\n ваш код для підтвердження: {special_code}", # Контент листа.
+            from_email = "qrprojectdjangoteam2@gmail.com", # Email проєкту, від лиця якого надсилається лист.
+            recipient_list = [f"{form.cleaned_data['email']}"], # Відправляємо на адресу користувача.
+            fail_silently = False # Якщо в процесі відправки листа відбудеться помилка, показати її.
+            )
+        # Повертаємо response.
+        return response
 # Створюємо клас ConfirmRegistrationView для відображення сторінки та логіки на сторінці confirm. 
 class ConfirmRegistrationView(FormView):
     template_name = "registration_confirm/index.html" # Вказуємо файл html для відображення сторінки.
