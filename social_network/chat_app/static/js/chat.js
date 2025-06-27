@@ -41,7 +41,7 @@ socket.addEventListener('message', function(event){
         username.classList.add('message-author');
         messageElem.append(username);
         messageElem.classList.add("author-people");
-        if (messageObject["all_avatars"].length){
+        if (messageObject["all_avatars"]){
             for (let count = 0; count < messageObject["all_avatars"].length; count ++){
                 let ProfileAvatar = messageObject["all_avatars"][count]
                 let profileId = messageObject["profile_id"]
