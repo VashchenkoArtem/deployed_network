@@ -52,15 +52,16 @@ socket.addEventListener('message', function(event){
 
                 }
 
-            messageWithAvatar.classList.add('message-with-avatar')
-            messageWithAvatar.classList.add('author-people-message')
+
             }
+        messageWithAvatar.classList.add('message-with-avatar')
+        messageWithAvatar.classList.add('author-people-message')
         }
-    else {
-        avatar.classList.add("avatar-people");
-        avatar.src = "/static/images/account.png"
-        messageWithAvatar.append(avatar)
-    }
+        else {
+            avatar.classList.add("avatar-people");
+            avatar.src = "/static/images/account.png"
+            messageWithAvatar.append(avatar)
+        }
 
     }
     
