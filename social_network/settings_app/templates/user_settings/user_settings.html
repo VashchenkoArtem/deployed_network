@@ -35,6 +35,9 @@
                     {% endif %}
                     <p class="user-text">{{request.user.first_name}} {{request.user.last_name}}</p>
                     <p>@{{request.user.username}}</p>
+                    {% if error_name %}
+                        <h1 class = "error">{{error_name}}</h1>
+                    {% endif %}
                 </div> 
                 
             </div>
