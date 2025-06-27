@@ -11,6 +11,8 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from django.core.mail import send_mail
 import random
+from django.db import IntegrityError
+
 
 
 class UserSettingsView(TemplateView):
@@ -46,10 +48,14 @@ class UserSettingsView(TemplateView):
                     else:
                         Avatar.objects.create(profile=profile, image=new_avatar)
                     return redirect("user_settings")
-                if new_name :
-                    if profile.user.username:
-                        profile.user.username = new_name
-                        profile.user.save()        
+                if new_name:
+                    try:
+                        if profile.user.username:
+                            profile.user.username = new_name
+                            profile.user.save()    
+                    except IntegrityError:
+                        print("Error")
+                        return render(request, self.template_name, context = {"error_name": "Користувач з таким іменем вже існує!"})
                 return redirect("user_settings")
         elif request.POST.get("hidden_input"):
             username = request.user.username
