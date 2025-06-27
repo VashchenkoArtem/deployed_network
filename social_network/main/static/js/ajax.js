@@ -37,8 +37,10 @@ $(document).ready(function(){
         url: `/get_info/`,
         type: "get",
         success: function(response){
-            console.log("sdsdaad")
-            $(".posts-count").text(response.all_posts_count)
+            console.log(response.all_requests)
+            $(".posts-count").text(response.all_posts_count);
+            $(".readers").text(response.all_views);
+            $(".friends-count").text(response.my_friends)
         }
     })
 });

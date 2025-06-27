@@ -32,19 +32,19 @@
                 </div>
                 <div class = "subscribers" >
                     <div class = "all-posts section">
-                        <h2 class = "number posts-count"></h2>
+                        <h2 class = "number posts-count">0</h2>
                         <h3 class = "info">Дописи</h3>  
                     </div>
                     <div class = "followers section">
                         {% if all_views %}
                             <h2 class = "number">{{ all_views.count}}</h2>
                         {% else %}
-                            <h2 class = "number">0</h2>
+                            <h2 class = "number readers">0</h2>
                         {% endif %}
                         <h3 class = "info">Читачі</h3>
                     </div>
                     <div class = "all-friends section">
-                        <h2 class = "number">{{ my_friends | length }}</h2>
+                        <h2 class = "number friends-count">0</h2>
                         <h3 class = "info">Друзі</h3>
                     </div>
                 </div>

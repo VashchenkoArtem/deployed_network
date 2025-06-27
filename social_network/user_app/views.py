@@ -89,9 +89,6 @@ class AuthorizationView(FormView):
         user = authenticate(username = email, password = password)
         # Якщо існує, то 
         if user is not None:
-            user_id = User.objects.get(id = user.id).id
-            profile_id = Profile.objects.get(user_id = user_id).id
-            response.set_cookie("current_profile_id", str(profile_id))
             login(self.request, user) # Логінемо користувача
             return response # Повертаємо батьківський form_valid.
         else:

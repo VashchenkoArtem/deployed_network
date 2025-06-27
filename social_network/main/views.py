@@ -35,6 +35,7 @@ class MainView(CreateView):
         return response #
     #
     def dispatch(self, request, *args, **kwargs):
+        response = super().dispatch(request, *args, **kwargs)
         if not Profile.objects.filter(user_id = request.user.id).exists(): # 
             return redirect("registration") #
         # current_user = Profile.objects.get(user_id = self.request.user.pk) #
@@ -43,15 +44,15 @@ class MainView(CreateView):
         #     for post_view in user_posts: #
         #         post_view.views.add(current_user) #
         #         post_view.save() #
-        return super().dispatch(request, *args, **kwargs) #
+        response.set_cookie("user_id", request.user.id)
+        return response #
     #
     def get_context_data(self, **kwargs):
         context = super(MainView, self).get_context_data(**kwargs) #
         context["posts"] = Post.objects.order_by('-id')[:3] # 
         # context["tags"] = Tag.objects.all() # 
         # context['people'] = Profile.objects.get(user_id = self.request.user.pk) #
-        profile_id = self.request.COOKIES['current_profile_id']
-        context['profile_id'] = profile_id
+        # profile_id = self.request.COOKIES['current_profile_id']
         # context["all_urls"] = Link.objects.none() 
         # profile = Profile.objects.get(user_id = self.request.user.pk) # 
         # context["posts_count"] = Post.objects.filter(author_id = profile_id) # 
@@ -80,12 +81,12 @@ class MainView(CreateView):
 
 
         context['author_avatars'] = author_avatars 
-        context["my_avatars"] = Avatar.objects.filter(profile_id = context["profile_id"]).first() #
+        # context["my_avatars"] = Avatar.objects.filter(profile_id = context["profile_id"]).first() #
         context['all_groups'] = ChatGroup.objects.none() #
         # context["current_user"] = profile #
         context['all_views'] = Post.objects.none() #
-        for post in Post.objects.filter(author_id = context["profile_id"]): #  
-            context['all_views'] = context['all_views'] | post.views.order_by("-id")[:3] #
+        # for post in Post.objects.filter(author_id = context["profile_id"]): #  
+        #     context['all_views'] = context['all_views'] | post.views.order_by("-id")[:3] #
         # context["tags"] = Tag.objects.all() # 
         # context['people'] = Profile.objects.get(user_id = self.request.user.pk) #
         # context["all_urls"] = Link.objects.all() 
@@ -171,6 +172,22 @@ def get_likes(request,  post_pk):
     return redirect("/") #
 
 def get_all_info(request):
-    profile_id = request.COOKIES["current_profile_id"]
-    all_posts = len(Post.objects.filter(author_id = profile_id))
-    return JsonResponse({"all_posts_count": all_posts})
+    profile_id = request.user.profile.id
+    all_posts = Post.objects.filter(author_id = profile_id)
+    all_posts_count = len(all_posts)
+    all_views = []
+    for post in all_posts:
+        if post.views:
+            for view in post.views.all():
+                all_views.append(view.id)
+    my_friends_1 = Friendship.objects.filter(profile1_id = profile_id, accepted = True)
+    my_friends_2 = Friendship.objects.filter(profile2_id = profile_id, accepted = True)
+    all_my_friends = my_friends_1.union(my_friends_2)
+    all_requests = Friendship.objects.filter(profile2_id = profile_id, accepted = False)
+    requests_data = serializers.serialize('json', all_requests)
+    return JsonResponse({
+                        "all_posts_count": all_posts_count,
+                        "all_views": len(all_views),
+                        "my_friends": len(all_my_friends),
+                        "all_requests": requests_data
+                         })
