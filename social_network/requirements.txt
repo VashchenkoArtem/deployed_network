@@ -1,3 +1,5 @@
+websockets==15.0.1
+wsproto==1.2.0
 asgiref==3.8.1
 attrs==25.3.0
 autobahn==24.4.2

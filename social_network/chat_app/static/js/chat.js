@@ -1,6 +1,6 @@
 const chatGroup = document.getElementById("chatGroupId").value // Отримуємо value прихованого input з id групи.
 
-const socketUrl = `ws://${window.location.host}/chats/all_chats/${chatGroup}`; //  Формуємо URL адресу для WS-з'єднання за поточним хостом
+const socketUrl = `wss://${window.location.host}/chats/all_chats/${chatGroup}`; //  Формуємо URL адресу для WS-з'єднання за поточним хостом
 
 const socket = new WebSocket(socketUrl); // Ініціалізуємо WebSocket (Створюємо WS-з'єднання)
 
