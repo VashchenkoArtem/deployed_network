@@ -80,17 +80,20 @@ class AuthorizationView(FormView):
     template_name="authorization/index.html" # Вказуємо файл html для відображення сторінки.
     form_class = AuthorithationForm # Вказуємо форму для роботи з валідними даними.
     success_url = "/" # Перекид на головну сторінку після успішної аутентифікації.
-
     # Створюємо метод form_valid, який відпрацює після того, як дані у формі будуть валідовані.
     def form_valid(self, form):
+        response = super().form_valid(form)
         email = form.cleaned_data['email'] # Отримуємо з форми введений email користувача.
         password = form.cleaned_data['password'] # Отримуємо з форми введений password користувача.
         # Перевіряємо, чи існує користувач з таким username та password.
         user = authenticate(username = email, password = password)
         # Якщо існує, то 
         if user is not None:
+            user_id = User.objects.get(id = user.id).id
+            profile_id = Profile.objects.get(user_id = user_id).id
+            response.set_cookie("current_profile_id", str(profile_id))
             login(self.request, user) # Логінемо користувача
-            return super().form_valid(form) # Повертаємо батьківський form_valid.
+            return response # Повертаємо батьківський form_valid.
         else:
             form.add_error(None, "Невірна пошта або пароль") # Якщо ні, виводити помилку.
             return self.form_invalid(form) # Форма не валідна.

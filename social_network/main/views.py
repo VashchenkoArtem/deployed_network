@@ -37,54 +37,92 @@ class MainView(CreateView):
     def dispatch(self, request, *args, **kwargs):
         if not Profile.objects.filter(user_id = request.user.id).exists(): # 
             return redirect("registration") #
-        current_user = Profile.objects.get(user_id = self.request.user.pk) #
-        user_posts = Post.objects.all() #
-        if len(user_posts) > 0: #
-            for post_view in user_posts: #
-                post_view.views.add(current_user) #
-                post_view.save() #
+        # current_user = Profile.objects.get(user_id = self.request.user.pk) #
+        # user_posts = Post.objects.all() #
+        # if len(user_posts) > 0: #
+        #     for post_view in user_posts: #
+        #         post_view.views.add(current_user) #
+        #         post_view.save() #
         return super().dispatch(request, *args, **kwargs) #
     #
     def get_context_data(self, **kwargs):
         context = super(MainView, self).get_context_data(**kwargs) #
-        context["posts"] = Post.objects.all().order_by('-id')[:3] # 
-        context["tags"] = Tag.objects.all() #
-        context['people'] = Profile.objects.get(user_id = self.request.user.pk) #
-        context["all_urls"] = Link.objects.all() #
-        context['all_peoples'] = Profile.objects.all() #
-        profile = Profile.objects.get(user_id = self.request.user.pk) #
-        context["posts_count"] = Post.objects.filter(author_id = profile) #
-        context["my_friends"] = Friendship.objects.filter(profile2 = profile, accepted = True) #
-        context["all_requests"] = Friendship.objects.filter(profile2 = profile) #
-        context["all_users"] = Profile.objects.all() #
-        context["users"] = User.objects.all() 
+        context["posts"] = Post.objects.order_by('-id')[:3] # 
+        # context["tags"] = Tag.objects.all() # 
+        # context['people'] = Profile.objects.get(user_id = self.request.user.pk) #
+        profile_id = self.request.COOKIES['current_profile_id']
+        context['profile_id'] = profile_id
+        # context["all_urls"] = Link.objects.none() 
+        # profile = Profile.objects.get(user_id = self.request.user.pk) # 
+        # context["posts_count"] = Post.objects.filter(author_id = profile_id) # 
+        # context["my_friends"] = Friendship.objects.filter(profile2 = profile, accepted = True) #
+        # context["all_requests"] = Friendship.objects.filter(profile2 = profile) #
+        # context["all_users"] = Profile.objects.none() #
+        # context["users"] = User.objects.none() 
         author_avatars = {} #
-        for author in Profile.objects.filter(id__in=Post.objects.values_list('author_id', flat=True)): #
-            avatar = Avatar.objects.filter(profile=author, shown=True, active=True).first() #
-            author_avatars[author.id] = avatar #
-        for group in ChatGroup.objects.all(): #
-            for member in group.members.all(): #
-                if member.id not in author_avatars: #
-                    avatar = Avatar.objects.filter(profile=member, shown=True, active=True).first() #
-                    author_avatars[member.id] = avatar #
-        for friend_ship in Friendship.objects.all(): #
-            if friend_ship.profile1 == Profile.objects.get(user_id = self.request.user.pk): #
-                if friend_ship.profile2.id not in author_avatars: #
-                    avatar = Avatar.objects.filter(profile=friend_ship.profile2, shown=True, active=True).first()#
-                    author_avatars[friend_ship.profile2.id] = avatar #
-            if friend_ship.profile2 == Profile.objects.get(user_id = self.request.user.pk): #
-                if friend_ship.profile1.id not in author_avatars: #
-                    avatar = Avatar.objects.filter(profile=friend_ship.profile1, shown=True, active=True).first() #
-                    author_avatars[friend_ship.profile1.id] = avatar #
+        # for author in Profile.objects.filter(id__in=Post.objects.values_list('author_id', flat=True)): #
+        #     avatar = Avatar.objects.filter(profile=author, shown=True, active=True).first() #
+        #     author_avatars[author.id] = avatar #
+        # for group in ChatGroup.objects.all(): #
+        #     for member in group.members.all(): #
+        #         if member.id not in author_avatars: #
+        #             avatar = Avatar.objects.filter(profile=member, shown=True, active=True).first() #
+        #             author_avatars[member.id] = avatar #
+        # for friend_ship in Friendship.objects.all(): #
+        #     if friend_ship.profile1 == Profile.objects.get(user_id = self.request.user.pk): #
+        #         if friend_ship.profile2.id not in author_avatars: #
+        #             avatar = Avatar.objects.filter(profile=friend_ship.profile2, shown=True, active=True).first()#
+        #             author_avatars[friend_ship.profile2.id] = avatar #
+        #     if friend_ship.profile2 == Profile.objects.get(user_id = self.request.user.pk): #
+        #         if friend_ship.profile1.id not in author_avatars: #
+        #             avatar = Avatar.objects.filter(profile=friend_ship.profile1, shown=True, active=True).first() #
+        #             author_avatars[friend_ship.profile1.id] = avatar #
 
 
-        context['author_avatars'] = author_avatars #
-        context["my_avatars"] = Avatar.objects.filter(profile_id = profile.id) #
-        context['all_groups'] = ChatGroup.objects.all() #
-        context["current_user"] = profile #
+        context['author_avatars'] = author_avatars 
+        context["my_avatars"] = Avatar.objects.filter(profile_id = context["profile_id"]).first() #
+        context['all_groups'] = ChatGroup.objects.none() #
+        # context["current_user"] = profile #
         context['all_views'] = Post.objects.none() #
-        for post in Post.objects.filter(author = profile): #  
-            context['all_views'] = context['all_views'] | post.views.all() #
+        for post in Post.objects.filter(author_id = context["profile_id"]): #  
+            context['all_views'] = context['all_views'] | post.views.order_by("-id")[:3] #
+        # context["tags"] = Tag.objects.all() # 
+        # context['people'] = Profile.objects.get(user_id = self.request.user.pk) #
+        # context["all_urls"] = Link.objects.all() 
+        # context['all_peoples'] = Profile.objects.all() #
+        # profile = Profile.objects.get(user_id = self.request.user.pk) # 
+        # context["posts_count"] = Post.objects.filter(author_id = profile) # 
+        # context["my_friends"] = Friendship.objects.filter(profile2 = profile, accepted = True) #
+        # context["all_requests"] = Friendship.objects.filter(profile2 = profile) #
+        # context["all_users"] = Profile.objects.all() #
+        # context["users"] = User.objects.all() 
+        # author_avatars = {} #
+        # for author in Profile.objects.filter(id__in=Post.objects.values_list('author_id', flat=True)): #
+        #     avatar = Avatar.objects.filter(profile=author, shown=True, active=True).first() #
+        #     author_avatars[author.id] = avatar #
+        # for group in ChatGroup.objects.all(): #
+        #     for member in group.members.all(): #
+        #         if member.id not in author_avatars: #
+        #             avatar = Avatar.objects.filter(profile=member, shown=True, active=True).first() #
+        #             author_avatars[member.id] = avatar #
+        # for friend_ship in Friendship.objects.all(): #
+        #     if friend_ship.profile1 == Profile.objects.get(user_id = self.request.user.pk): #
+        #         if friend_ship.profile2.id not in author_avatars: #
+        #             avatar = Avatar.objects.filter(profile=friend_ship.profile2, shown=True, active=True).first()#
+        #             author_avatars[friend_ship.profile2.id] = avatar #
+        #     if friend_ship.profile2 == Profile.objects.get(user_id = self.request.user.pk): #
+        #         if friend_ship.profile1.id not in author_avatars: #
+        #             avatar = Avatar.objects.filter(profile=friend_ship.profile1, shown=True, active=True).first() #
+        #             author_avatars[friend_ship.profile1.id] = avatar #
+
+
+        # context['author_avatars'] = author_avatars #
+        # context["my_avatars"] = Avatar.objects.filter(profile_id = profile.id) #
+        # context['all_groups'] = ChatGroup.objects.all() #
+        # context["current_user"] = profile #
+        # context['all_views'] = Post.objects.none() #
+        # for post in Post.objects.filter(author = profile): #  
+        #     context['all_views'] = context['all_views'] | post.views.all() #
         return context #
  #   
 class MyDeleteView(DeleteView):
@@ -131,4 +169,8 @@ def get_likes(request,  post_pk):
     post.likes.add(profile) #
     post.save() #
     return redirect("/") #
-    
+
+def get_all_info(request):
+    profile_id = request.COOKIES["current_profile_id"]
+    all_posts = len(Post.objects.filter(author_id = profile_id))
+    return JsonResponse({"all_posts_count": all_posts})

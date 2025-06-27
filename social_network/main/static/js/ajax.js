@@ -32,4 +32,13 @@ $(document).ready(function(){
             }
         })
     })
+    
+    $.ajax({
+        url: `/get_info/`,
+        type: "get",
+        success: function(response){
+            console.log("sdsdaad")
+            $(".posts-count").text(response.all_posts_count)
+        }
+    })
 });

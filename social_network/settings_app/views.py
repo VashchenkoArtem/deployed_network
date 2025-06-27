@@ -97,7 +97,7 @@ class UserAlbums(CreateView):
         profile = Profile.objects.get(user_id = self.request.user.id)
         context['all_albums'] =  Album.objects.filter(author = profile)
         context['my_avatars'] = Avatar.objects.filter(profile = profile, shown = True, active = True)
-        context['all_tags'] = Tag.objects.all()
+        context['all_tags'] = Tag.objects.none()
         try:
             context['album_photos'] = Album.objects.all().first().images.all()
         except:
