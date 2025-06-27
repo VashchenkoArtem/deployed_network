@@ -33,7 +33,7 @@ class RegistrationView(CreateView):
         special_code = random.randint(99999, 999999) # Створюємо рандомний шестизначний код для підтвердження особистості.
         # user_id = User.objects.get(email = form.cleaned_data['email']).id 
         user = form.save() # Зберігаємо у базу даних дані із форми.
-        user.username = f"user-12345" # Додаємо вручну поле username з його id, яке є обов'язковим для бази даних і необов'язковим для реєстрації користувача.
+        user.username = f"user-{user.pk}" # Додаємо вручну поле username з його id, яке є обов'язковим для бази даних і необов'язковим для реєстрації користувача.
         user.save() # Зберігаємо у базу даних створений username.
         Profile.objects.create(user = user) # Створюємо профіль на основі даних.
         VerificationCode.objects.create(username = user.username, code = special_code) # Створюємо та зберігаємо у базу даних шестизначний код.
