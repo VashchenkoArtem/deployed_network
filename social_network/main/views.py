@@ -47,7 +47,7 @@ class MainView(CreateView):
     #
     def get_context_data(self, **kwargs):
         context = super(MainView, self).get_context_data(**kwargs) #
-        context["posts"] = Post.objects.all().order_by('-id') # 
+        context["posts"] = Post.objects.all().order_by('-id')[:3] # 
         context["tags"] = Tag.objects.all() #
         context['people'] = Profile.objects.get(user_id = self.request.user.pk) #
         context["all_urls"] = Link.objects.all() #
@@ -57,7 +57,7 @@ class MainView(CreateView):
         context["my_friends"] = Friendship.objects.filter(profile2 = profile, accepted = True) #
         context["all_requests"] = Friendship.objects.filter(profile2 = profile) #
         context["all_users"] = Profile.objects.all() #
-        context["users"] = User.objects.all()
+        context["users"] = User.objects.all() 
         author_avatars = {} #
         for author in Profile.objects.filter(id__in=Post.objects.values_list('author_id', flat=True)): #
             avatar = Avatar.objects.filter(profile=author, shown=True, active=True).first() #
