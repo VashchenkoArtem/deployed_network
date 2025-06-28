@@ -18,7 +18,8 @@ from chat_app.models import ChatGroup # Імпортуємо модель гру
 class MainView(CreateView):
     template_name = "main/index.html" # Вказуємо шаблон для головної сторінки
     form_class = PostForm # Вказуємо форму для створення постів
-    success_url = "/" #
+    success_url = "/" 
+        
     #
     def form_valid(self, form): 
         profile = Profile.objects.get(user_id=self.request.user.pk) #
@@ -38,19 +39,19 @@ class MainView(CreateView):
         response = super().dispatch(request, *args, **kwargs)
         if not Profile.objects.filter(user_id = request.user.id).exists(): # 
             return redirect("registration") #
-        # current_user = Profile.objects.get(user_id = self.request.user.pk) #
-        # user_posts = Post.objects.all() #
-        # if len(user_posts) > 0: #
-        #     for post_view in user_posts: #
-        #         post_view.views.add(current_user) #
-        #         post_view.save() #
+        current_user = Profile.objects.get(user_id = self.request.user.pk) #
+        user_posts = Post.objects.all().order_by("-id")[:3] #
+        if len(user_posts) > 0: #
+            for post_view in user_posts: #
+                post_view.views.add(current_user) #
+                post_view.save() #
         response.set_cookie("user_id", request.user.id)
         return response #
     #
     def get_context_data(self, **kwargs):
         context = super(MainView, self).get_context_data(**kwargs) #
         context["posts"] = Post.objects.order_by('-id')[:3] # 
-        # context["tags"] = Tag.objects.all() # 
+        context["tags"] = Tag.objects.all() # 
         # context['people'] = Profile.objects.get(user_id = self.request.user.pk) #
         # profile_id = self.request.COOKIES['current_profile_id']
         # context["all_urls"] = Link.objects.none() 
@@ -84,7 +85,7 @@ class MainView(CreateView):
         # context["my_avatars"] = Avatar.objects.filter(profile_id = context["profile_id"]).first() #
         context['all_groups'] = ChatGroup.objects.none() #
         # context["current_user"] = profile #
-        context['all_views'] = Post.objects.none() #
+        # context['all_views'] = Post.objects.none() #
         # for post in Post.objects.filter(author_id = context["profile_id"]): #  
         #     context['all_views'] = context['all_views'] | post.views.order_by("-id")[:3] #
         # context["tags"] = Tag.objects.all() # 
@@ -92,9 +93,10 @@ class MainView(CreateView):
         # context["all_urls"] = Link.objects.all() 
         # context['all_peoples'] = Profile.objects.all() #
         # profile = Profile.objects.get(user_id = self.request.user.pk) # 
+        profile_id = self.request.user.profile.id
         # context["posts_count"] = Post.objects.filter(author_id = profile) # 
-        # context["my_friends"] = Friendship.objects.filter(profile2 = profile, accepted = True) #
-        # context["all_requests"] = Friendship.objects.filter(profile2 = profile) #
+
+        context["all_requests"] = Friendship.objects.filter(profile2_id = profile_id) #
         # context["all_users"] = Profile.objects.all() #
         # context["users"] = User.objects.all() 
         # author_avatars = {} #
@@ -109,7 +111,7 @@ class MainView(CreateView):
         # for friend_ship in Friendship.objects.all(): #
         #     if friend_ship.profile1 == Profile.objects.get(user_id = self.request.user.pk): #
         #         if friend_ship.profile2.id not in author_avatars: #
-        #             avatar = Avatar.objects.filter(profile=friend_ship.profile2, shown=True, active=True).first()#
+        #             avatar = Avataяr.objects.filter(profile=friend_ship.profile2, shown=True, active=True).first()#
         #             author_avatars[friend_ship.profile2.id] = avatar #
         #     if friend_ship.profile2 == Profile.objects.get(user_id = self.request.user.pk): #
         #         if friend_ship.profile1.id not in author_avatars: #
@@ -183,11 +185,20 @@ def get_all_info(request):
     my_friends_1 = Friendship.objects.filter(profile1_id = profile_id, accepted = True)
     my_friends_2 = Friendship.objects.filter(profile2_id = profile_id, accepted = True)
     all_my_friends = my_friends_1.union(my_friends_2)
-    all_requests = Friendship.objects.filter(profile2_id = profile_id, accepted = False)
-    requests_data = serializers.serialize('json', all_requests)
+    # all_messages1= Friendship.objects.filter(profile1_id = profile_id, accepted = False)
+    # all_messages2 = Friendship.objects.filter(profile2_id = profile_id, accepted = True)
+    # all_messages = all_messages1.union(all_messages2)
+    all_requests = Friendship.objects.filter(profile2_id = profile_id)
+    request_data = serializers.serialize('json', all_requests)
     return JsonResponse({
                         "all_posts_count": all_posts_count,
                         "all_views": len(all_views),
                         "my_friends": len(all_my_friends),
-                        "all_requests": requests_data
-                         })
+                        "all_requests": request_data,
+                        "profile_id": profile_id
+                        })
+    
+def get_all_tags(request):
+    tags = Tag.objects.all()
+    tags_data = serializers.serialize('json', tags)
+    return JsonResponse({"tags": tags_data})
