@@ -51,21 +51,22 @@ class ChatsView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        my_profile = Profile.objects.get(user_id=self.request.user.id)
+        all_profiles = Profile.objects.all()
+        my_profile = all_profiles.get(user_id=self.request.user.id)
         context["all_avatars"] = Avatar.objects.all()
         context["current_user"] = my_profile
         context["friends"] = Friendship.objects.filter(accepted=True)
         context["all_groups"] = ChatGroup.objects.all()
-        context["members_group"] = Profile.objects.none()
+        context["members_group"] = all_profiles.none()
         author_avatars = {}
-        for author in Profile.objects.all():
+        for author in all_profiles:
             avatar = Avatar.objects.filter(profile=author, shown=True, active=True).first()
             author_avatars[author.id] = avatar
         context["author_avatars"] = author_avatars
         ids_str = self.request.COOKIES.get('group_members')
         if ids_str:
             member_ids = ids_str.strip().split()
-            context["members_group"] = Profile.objects.filter(id__in=member_ids)
+            context["members_group"] = all_profiles.filter(id__in=member_ids)
         return context
 
 class ChatView(FormView):
