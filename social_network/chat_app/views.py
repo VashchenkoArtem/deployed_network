@@ -13,155 +13,186 @@ from user_app.models import Profile
 # Create your views here.
 class ChatsView(TemplateView):
     template_name = "all_chats/all_chats.html"
+
     def dispatch(self, request, *args, **kwargs):
-        if not Profile.objects.filter(user_id = request.user.id).exists():
+        if not Profile.objects.filter(user_id=request.user.id).exists():
             return redirect("registration")
-        else:   
-            return super().dispatch(request, *args, **kwargs)
-    def post(self, request, *args, **kwargs):
-        if request.POST.getlist('friends'):  
-            selected_ids = request.POST.getlist('friends')
-            ids_str = " ".join(selected_ids)
-            response = redirect('all_chats') 
-            response.set_cookie('group_members', ids_str)
-            return response
-
-        else:
-            group_name = request.POST.get("group_name")
-            group_avatar = request.FILES.get("add-image-avatar")
-
-            ids_str = request.COOKIES.get("group_members", "")
-            member_ids = ids_str.strip().split()
-            members = Profile.objects.filter(id__in=member_ids)
-            admin = Profile.objects.get(user_id = self.request.user.id)
-            group = ChatGroup.objects.create(
-                name=group_name,
-                avatar=group_avatar,
-                admin = admin
-            )
-
-            my_profile = Profile.objects.get(user_id = self.request.user.pk)
-            group.members.set(members)
-            group.members.add(my_profile)
-            
-
-            response = redirect('all_chats')
-            response.delete_cookie('group_members')
-            return response
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        all_profiles = Profile.objects.all()
-        my_profile = all_profiles.get(user_id=self.request.user.id)
-        context["all_avatars"] = Avatar.objects.all()
+
+        # Получаем профиль текущего пользователя
+        my_profile = Profile.objects.select_related('user').get(user_id=self.request.user.id)
         context["current_user"] = my_profile
+
+        # Предзагружаем все нужные аватары
+        all_avatars = Avatar.objects.filter(shown=True, active=True).select_related('profile')
+
+        # Собираем друзей (можно дооптимизировать, если Friendship связан с Profile через foreign key)
         context["friends"] = Friendship.objects.filter(accepted=True)
-        context["all_groups"] = ChatGroup.objects.all()
-        context["members_group"] = all_profiles.none()
-        author_avatars = {}
-        for author in all_profiles:
-            avatar = Avatar.objects.filter(profile=author, shown=True, active=True).first()
-            author_avatars[author.id] = avatar
+
+        # Оптимизированная выборка групп чатов
+        context["all_groups"] = ChatGroup.objects.select_related("admin").prefetch_related("members")
+
+        # Заполнение словаря автор-аватар
+        author_avatars = {
+            avatar.profile_id: avatar for avatar in all_avatars
+        }
         context["author_avatars"] = author_avatars
+
+        # Участники группы по кукам
         ids_str = self.request.COOKIES.get('group_members')
         if ids_str:
             member_ids = ids_str.strip().split()
-            context["members_group"] = all_profiles.filter(id__in=member_ids)
+            context["members_group"] = Profile.objects.filter(id__in=member_ids)
+        else:
+            context["members_group"] = Profile.objects.none()
+
         return context
+
+    def post(self, request, *args, **kwargs):
+        selected_ids = request.POST.getlist('friends')
+        if selected_ids:
+            ids_str = " ".join(selected_ids)
+            response = redirect('all_chats')
+            response.set_cookie('group_members', ids_str)
+            return response
+
+        # Создание группы
+        group_name = request.POST.get("group_name")
+        group_avatar = request.FILES.get("add-image-avatar")
+        ids_str = request.COOKIES.get("group_members", "")
+        member_ids = ids_str.strip().split()
+
+        # Получаем всех нужных участников одним запросом
+        members = Profile.objects.filter(id__in=member_ids)
+
+        # Получаем админа (текущего пользователя)
+        admin = Profile.objects.get(user_id=self.request.user.id)
+
+        # Создаём группу
+        group = ChatGroup.objects.create(
+            name=group_name,
+            avatar=group_avatar,
+            admin=admin
+        )
+
+        # Добавляем участников и текущего пользователя
+        group.members.set(members)
+        group.members.add(admin)
+
+        response = redirect('all_chats')
+        response.delete_cookie('group_members')
+        return response
 
 class ChatView(FormView):
     template_name = "chat/chat.html"
     form_class = MessageForm
+
     def dispatch(self, request, *args, **kwargs):
-        profile = Profile.objects.get(user_id = request.user.pk)
-        chat_pk = self.kwargs["chat_pk"]
-        chat = ChatGroup.objects.get(id = chat_pk)
-        if profile in chat.members.all():
-            if not Profile.objects.filter(user_id = request.user.id).exists():
-                return redirect("registration")
-            else:   
-                return super().dispatch(request, *args, **kwargs)
-        elif profile not in chat.members.all():
+        try:
+            profile = Profile.objects.get(user_id=request.user.pk)
+            chat = ChatGroup.objects.prefetch_related('members').get(pk=self.kwargs["chat_pk"])
+        except (Profile.DoesNotExist, ChatGroup.DoesNotExist):
             return redirect("all_chats")
 
-    def get_context_data(self, **kwargs):
-        context = super(ChatView, self).get_context_data(**kwargs)
-        chat_pk = self.kwargs["chat_pk"]
-        group = ChatGroup.objects.get(id = chat_pk)
-        all_messages = ChatMessage.objects.filter(chat_group = group)
-        
-        context['chat_group'] = group
-        context["all_avatars"] = Avatar.objects.all()
-        context['current_user'] = Profile.objects.get(user_id = self.request.user.id)
-        context["friends"] = Friendship.objects.filter(accepted = True)
-        context['all_groups'] = ChatGroup.objects.all()
-        context['messages'] = all_messages
-        context["members_group"] = group.members.all()
-        author_avatars = {}
-        for author in Profile.objects.all():
-            avatar = Avatar.objects.filter(profile=author, shown=True, active=True).first()
-            author_avatars[author.id] = avatar
-        context["author_avatars"] = author_avatars
-        return context
-    def post(self, request, *args, **kwargs):
-        # ChatsView
+        if profile not in chat.members.all():
+            return redirect("all_chats")
 
-        if request.POST.getlist('friends'):  
+        if not Profile.objects.filter(user_id=request.user.id).exists():
+            return redirect("registration")
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        chat_pk = self.kwargs["chat_pk"]
+
+        group = ChatGroup.objects.select_related('admin').prefetch_related('members').get(pk=chat_pk)
+
+        messages = ChatMessage.objects.filter(chat_group=group).select_related('author')
+
+        my_profile = Profile.objects.select_related('user').get(user_id=self.request.user.id)
+        friends = Friendship.objects.filter(accepted=True)
+        all_groups = ChatGroup.objects.prefetch_related('members')
+
+        # Предзагружаем только нужные профили для аватаров
+        members_profiles = list(group.members.all())
+        author_ids = [p.id for p in members_profiles]
+        avatars = Avatar.objects.filter(profile_id__in=author_ids, shown=True, active=True)
+        author_avatars = {avatar.profile_id: avatar for avatar in avatars}
+
+        context.update({
+            "chat_group": group,
+            "messages": messages,
+            "current_user": my_profile,
+            "friends": friends,
+            "all_groups": all_groups,
+            "members_group": members_profiles,
+            "author_avatars": author_avatars
+        })
+
+        return context
+
+    def post(self, request, *args, **kwargs):
+        # Добавление участников в куки (из all_chats)
+        if request.POST.getlist('friends'):
             selected_ids = request.POST.getlist('friends')
-            ids_str = " ".join(selected_ids)
-            response = redirect('all_chats') 
-            response.set_cookie('group_members', ids_str)
+            response = redirect('all_chats')
+            response.set_cookie('group_members', " ".join(selected_ids))
             return response
-        elif request.POST.getlist("group_name"):
+
+        # Создание группы
+        elif request.POST.get("group_name"):
             group_name = request.POST.get("group_name")
             group_avatar = request.FILES.get("add-image-avatar")
 
-            ids_str = request.COOKIES.get("group_members", "")
-            member_ids = ids_str.strip().split()
+            member_ids = request.COOKIES.get("group_members", "").strip().split()
             members = Profile.objects.filter(id__in=member_ids)
 
+            admin_profile = Profile.objects.get(user_id=request.user.id)
             group = ChatGroup.objects.create(
                 name=group_name,
                 avatar=group_avatar,
-                admin_id=self.request.user.id
+                admin=admin_profile
             )
-
-            my_profile = Profile.objects.get(user_id = self.request.user.pk)
             group.members.set(members)
-            group.members.add(my_profile)
-        
+            group.members.add(admin_profile)
+
             response = redirect('all_chats')
             response.delete_cookie('group_members')
-        # ChatView
+            return response
 
+        # Редактирование группы (название/аватар)
         elif not request.POST.getlist('edit_friends') and not request.POST.get("chat_hidden_input"):
+            group = ChatGroup.objects.get(pk=self.kwargs['chat_pk'])
+            new_name = request.POST.get("edit_group_name")
+            new_avatar = request.FILES.get("edit-image-avatar")
+
+            if new_name:
+                group.name = new_name
+            if new_avatar:
+                group.avatar = new_avatar
+            group.save()
+
             response = redirect('chat', self.kwargs['chat_pk'])
-            try:
-                new_group_name = request.POST.get("edit_group_name")
-                new_group_avatar = request.FILES.get("edit-image-avatar")
-                group = ChatGroup.objects.get(id = self.kwargs['chat_pk'])
-                group.name = new_group_name
-                if new_group_avatar:
-                    group.avatar = new_group_avatar
-                    group.save()
-                if new_group_name:
-                    group.name = new_group_name
-                    group.save()
-                
-                response.delete_cookie("get_friends")
-                return response
-            except:
-                return response
+            response.delete_cookie("get_friends")
+            return response
+
+        # Обновление списка участников
         else:
             members_id = request.POST.getlist('edit_friends')
-            response = redirect('chat', self.kwargs['chat_pk'])
-            chat_pk = self.kwargs["chat_pk"]
-            my_profile = Profile.objects.get(user_id = self.request.user.id)
-            group = ChatGroup.objects.get(id = chat_pk)
+            group = ChatGroup.objects.get(pk=self.kwargs['chat_pk'])
+            my_profile = Profile.objects.get(user_id=request.user.id)
+
             group.members.set(members_id)
             group.members.add(my_profile)
+
+            response = redirect('chat', self.kwargs['chat_pk'])
             response.set_cookie("get_friends", "1234")
             return response
+
     def get_success_url(self):
         return reverse("chat", kwargs={"chat_pk": self.kwargs["chat_pk"]})
 
