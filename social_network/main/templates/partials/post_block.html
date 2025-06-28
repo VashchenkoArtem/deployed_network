@@ -1,0 +1,67 @@
+{% load custom_tags %}
+{% load static %}
+{% for post in posts %}
+<div class="social-media-post" id="{{ post.pk }}">
+    <div class="people-information-post">
+        <div class="avatar-label">
+            <div class="people-logo-and-nick">
+                <div class="logo-post">
+                    {% with author_avatar=author_avatars|get_item:post.author.id %}
+                        {% if author_avatar and author_avatar.image %}
+                            <img class="post-friend-avatar" src="{{ author_avatar.image.url }}" alt="">
+                        {% else %}
+                            <img class="post-friend-avatar" src="{% static 'images/icons/account.png' %}" alt="">
+                        {% endif %}
+                    {% endwith %}
+                </div>
+                <div class="nick-post">
+                    <h2 class="nick-friend">{{ post.author.user.first_name }} {{ post.author.user.last_name }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="body-post">
+        <h2 class="title-post">{{ post.title }}</h2>
+        <h2 class="title-post">{{ post.topic }}</h2>
+        <h3 class="description-post">{{ post.content }}</h3>
+
+        {% if post.tags.all %}
+        <div class="hashtags">
+            {% for tag in post.tags.all %}
+                <h1 class="hashtag">{{ tag.name }}</h1>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% for url in all_urls %}
+            {% if url.post == post %}
+                <div class="url-post">
+                    <a href="{{ url.url }}" target="_blank" class="url-post">{{ url.url }}</a>
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        <div class="photos">
+            {% for img in post.images.all %}
+                <img src="{{ img.file.url }}" class="image photos-{{ post.images.all|length }} number-{{ forloop.counter }}">
+            {% endfor %}
+        </div>
+
+        <div class="reviews">
+            <div class="review">
+                <a class="icon-review icon-like {{ post.pk }}" id="{% url 'get_likes' post.pk %}">
+                    <img class="likes-icon likes-icon-click" src="{% static 'images/icons/Like.png' %}" alt="">
+                </a>
+                <h2 class="likes likes-title"><span id="likesPost-{{ post.pk }}">{{ post.likes.count }}</span> Вподобайок</h2>
+            </div>
+            <div class="review review-margin">
+                <div class="icon-review">
+                    <img class="likes-icon" src="{% static 'images/icons/eye.png' %}" alt="">
+                </div>
+                <h2 class="likes">{{ post.views.count }} Переглядів</h2>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}

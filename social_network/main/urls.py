@@ -3,7 +3,7 @@ from social_network.settings import DEBUG, MEDIA_URL, MEDIA_ROOT
 from django.conf.urls.static import static
 from .views import (
     MyDeleteView, EditView, MyLogoutView, PostDataView, UserUpdateView,
-    get_likes, get_all_info, get_all_tags
+    get_likes, get_all_info, get_all_tags, load_posts
 )
 
 
@@ -16,7 +16,9 @@ urlpatterns = [
     path('update/', UserUpdateView.as_view(), name='update_user'),
     path("add_like/<int:post_pk>", get_likes, name  = "get_likes"),
     path("get_info/", get_all_info, name = "get_all_info"),
-    path("get_all_tags/", get_all_tags, name = "get_all_tags")
+    path("get_all_tags/", get_all_tags, name = "get_all_tags"),
+
+
 ]
 
 if DEBUG:

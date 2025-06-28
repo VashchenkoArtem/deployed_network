@@ -1,6 +1,6 @@
 const chatGroup = document.getElementById("chatGroupId").value // Отримуємо value прихованого input з id групи.
 
-const socketUrl = `wss://${window.location.host}/chats/all_chats/${chatGroup}`; //  Формуємо URL адресу для WS-з'єднання за поточним хостом
+const socketUrl = `ws://${window.location.host}/chats/all_chats/${chatGroup}`; //  Формуємо URL адресу для WS-з'єднання за поточним хостом
 
 const socket = new WebSocket(socketUrl); // Ініціалізуємо WebSocket (Створюємо WS-з'єднання)
 
@@ -95,11 +95,3 @@ function scrollMessagesToBottom(){
     let divMessages = document.querySelector('.messages-class')
     divMessages.scrollTop = divMessages.scrollHeight;
 }
-document.addEventListener("DOMContentLoaded", () => {
-  fetch("/ajax_chat_contacts/")  // путь к новому view
-    .then(response => response.text())
-    .then(html => {
-      document.getElementById("ajax-contacts-container").innerHTML = html;
-    })
-    .catch(error => console.error("Ошибка загрузки контактов:", error));
-});

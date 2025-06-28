@@ -20,7 +20,7 @@ from django.urls import path, include
 from .settings import DEBUG, MEDIA_URL, MEDIA_ROOT
 from django.conf.urls.static import static
 from post_app.views import MyPublicationsView, redact_data, create_tag
-from main.views import MainView, get_all_info
+from main.views import MainView, get_all_info, load_posts
 
 
 urlpatterns = [
@@ -34,7 +34,8 @@ urlpatterns = [
     path("friends/", include('friends.urls')),
     path("chats/", include("chat_app.urls")),
     path("my_publications/create_tag/<str:tag_name>", create_tag, name = "create_tag"),
-    path("get_info/", get_all_info, name = "get_all_info")
+    path("get_info/", get_all_info, name = "get_all_info"),
+    path('load_posts/', load_posts, name='load_posts'),
 ]
 if DEBUG:
     urlpatterns += static(MEDIA_URL, document_root=MEDIA_ROOT)
