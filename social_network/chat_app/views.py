@@ -5,6 +5,7 @@ from django.urls import reverse_lazy
 from django.shortcuts import redirect, render
 from .models import ChatGroup, ChatMessage
 import json
+from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.http import JsonResponse
 from user_app.models import Profile
@@ -236,3 +237,33 @@ def exit_group(request, chat_pk):
     if profile in chat.members.all():
         chat.members.remove(profile)
     return redirect("all_chats")
+
+from django.shortcuts import render
+# from user_app.models import Friendship, Avatar, Profile
+
+@login_required
+def ajax_chat_contacts(request):
+    current_user = Profile.objects.get(user=request.user)
+    friends = Friendship.objects.filter(
+        accepted=True
+    ).filter(
+        profile1=current_user
+    ) | Friendship.objects.filter(
+        accepted=True,
+        profile2=current_user
+    )
+    friends = friends.distinct()
+
+    friend_profiles = []
+    for f in friends:
+        if f.profile1 == current_user:
+            friend_profiles.append(f.profile2)
+        else:
+            friend_profiles.append(f.profile1)
+    avatars = Avatar.objects.filter(profile__in=friend_profiles, shown=True, active=True)
+    avatar_map = {a.profile_id: a for a in avatars}
+
+    return render(request, "chat/ajax_contacts.html", {
+        "friends": friend_profiles,
+        "author_avatars": avatar_map,
+    })

@@ -95,3 +95,11 @@ function scrollMessagesToBottom(){
     let divMessages = document.querySelector('.messages-class')
     divMessages.scrollTop = divMessages.scrollHeight;
 }
+document.addEventListener("DOMContentLoaded", () => {
+  fetch("/ajax_chat_contacts/")  // путь к новому view
+    .then(response => response.text())
+    .then(html => {
+      document.getElementById("ajax-contacts-container").innerHTML = html;
+    })
+    .catch(error => console.error("Ошибка загрузки контактов:", error));
+});
