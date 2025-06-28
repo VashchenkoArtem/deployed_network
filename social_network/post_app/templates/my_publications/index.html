@@ -8,6 +8,7 @@
 
 {% block link %}
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/my_publications/style.css'%}">
 {% endblock %}
 
 {% block content %}
@@ -48,90 +49,6 @@
                         <h3 class = "info">Друзі</h3>
                     </div>
                 </div>
-            </div>
-            <div class = "frame request">
-                <div class = "title-frame">
-                    <div class = "logo-frame">
-                        <div class = "icon">
-                            <img class = "icon-people-request" src="{% static 'images/icons/friends.png'%}" alt="">
-                        </div>
-                        <h3 class = "description-block">Запити</h3>
-                    </div>
-                    <div class = "button-frame">
-                        <h3>Дивитись всі</h3>
-                    </div>
-                </div>  
-                <div class = "body-frame">
-                    {% for request in all_requests %}
-                        {% if request.accepted == False%}
-                            <a class = "one-people" href = "{% url 'all_requests'%}">
-                                <div class = "people-information">
-                                    <div class = "icon-people">
-                                        {% with author_avatar=author_avatars|get_item:request.profile1.id %}
-                                            {% if author_avatar and author_avatar.image %}
-                                                <img class="post-friend-avatar" src="{{ author_avatar.image.url }}" alt="">
-                                            {% else %}
-                                                <img class="post-friend-avatar" src="{% static 'images/icons/account.png' %}" alt="">
-                                            {% endif %}
-                                        {% endwith %}
-                                    </div>
-                                        <div class = "people-name-and-subscribers">
-                                            <h3 class = "friend-name request-block">{{ request.profile1.user.first_name }} {{ request.profile1.user.last_name }}</h3>
-                                            <h4 class = "subscribe">4.3к підписників</h4>
-                                        </div>  
-                                </div>
-                            </a>
-                        {% endif %}
-                    {% endfor%}     
-                </div>
-            </div>
-            
-            
-            <div class = "frame message">
-                <div class = "title-frame">
-                    <div class = "logo-frame">
-                        <div class = "icon">
-                            <img class = "icon-people-request" src="{% static 'images/icons/chats.png'%}" alt="">
-                        </div>
-                        <h3 class = "description-block">Повідомлення</h3>
-                    </div>
-                    <div class = "button-frame">
-                        <h3>Дивитись всі</h3>
-                    </div>  
-                </div>
-                <!-- <div class = "body-frame">
-                    {% for group in all_groups %}
-                        {% if group.is_personal_chat == True %}
-                            {% for member in group.members.all %}
-                                {% if member != current_user and current_user in group.members.all %}
-                                    <div class = "one-people">
-                                        <div class = "people-information">
-                                            <div class = icon-people>
-                                            {% with member.id as member_id %}
-                                                {% with author_avatars|get_item:member_id as author_avatar %}
-                                                    {% if author_avatar and author_avatar.image %}
-                                                        <img class="post-friend-avatar" src="{{ author_avatar.image.url }}" alt="">
-                                                    {% else %}
-                                                        <img class="post-friend-avatar" src="{% static 'images/icons/account.png' %}" alt="">
-                                                    {% endif %}
-                                                {% endwith %}
-                                            {% endwith %}
-                                            </div>
-                                            <a class = "people-name-and-message" href = "{% url 'chat' group.pk %}">
-                                                <div class = "people-name-and-time">
-                                                    <h3 class = "friend-name">{{group.name}}</h3>
-                                                    <h3 class = "time">09:41</h3>
-                                                </div>
-                                                <h4 class = message-friend>Привіт! Як справи?</h4>
-                                            </a>
-                                        </div>
-                                    </div>
-                                {% endif%}
-                            {% endfor %}
-                        {% endif%}
-                    {% endfor %}
-                </div> -->
-
             </div>
             
         </div>  
