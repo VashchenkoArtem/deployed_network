@@ -15,9 +15,10 @@ class FriendsView(TemplateView):
     #
     def get_context_data(self, **kwargs): 
         context = super(FriendsView, self).get_context_data(**kwargs) #
-        all_profiles = Profile.objects.all() 
-        profile = all_profiles.get(user = self.request.user) #
-        context["all_recommended"] = all_profiles[:6] #
+        all_profiles = Profile.objects.all()
+        profile = all_profiles.get(user=self.request.user)
+        context["all_recommended"] = all_profiles.exclude(user_id=self.request.user.id).order_by("-id")[:6]
+
         context["all_friends"] = Friendship.objects.filter(accepted = True)[:6] #
         context["all_requests"] = Friendship.objects.filter(profile2 = profile, accepted = False)[:6] #
         context["all_avatars"] = Avatar.objects.all() #
