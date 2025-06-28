@@ -1,0 +1,98 @@
+.registration-confirm-form{
+    width: calc(11.9vw + 16.8vh);
+    height: calc(20.6vh + 14.6vw);
+    background-color: white;
+    border-radius: calc(1.3vw + 1.9vh);
+    padding: 44px 16px 44px 16px;
+
+    padding-top: calc(2.1vh + 1.5vw);
+    padding-right: calc(0.7vh + 0.5vw);
+    padding-bottom: calc(2.1vh + 1.5vw);
+    padding-left: calc(0.7vh + 0.5vw);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-top: calc(4.9vh + 3.4vw);
+    margin-right: calc(16vw + 17.1vh);
+    gap: calc(1.7vh + 1.2vw);
+    position: relative;
+    z-index: 2;
+    
+}
+.title{
+    font-size: calc(0.8vw + 1.17vh);
+    line-height: 100%;
+    font-weight: 600;
+}
+
+.description-title{
+    font-size: calc(0.4vw + 0.6vh);
+    line-height: 100%;
+    font-weight: 500;
+}
+.form{
+    display: flex;
+    gap: calc(0.2vw + 0.3vh);
+}
+.input{
+    width: calc(1.3vw + 1.9vh);
+    height: calc(1.9vh + 1.3vw);
+    border-radius: calc(0.3vw + 0.4vh);
+    text-align: center;
+}
+.buttons{
+    display: flex;
+    flex-direction: column;
+    gap: calc(0.5vw + 0.7vh);
+}
+button{
+    width: calc(10.7vw + 15.2vh);
+    height: calc(2.5vh + 1.8vw);
+    border-radius: 1234px;
+    border: none;
+    background-color: rgba(84, 60, 82, 1);
+    font-size: calc(0.5vw + 0.7vh);
+    color: white;
+    
+}
+button:hover{
+    cursor: pointer;
+    background-color: rgb(68, 48, 66);
+    color: rgb(228, 228, 228);
+}
+
+a{
+    text-decoration: none;
+    font-size: calc(0.5vw + 0.7vh);
+    color: rgba(84, 60, 82, 1);
+    line-height: 100%;
+}
+.image{
+    width: calc(23.5vw+ 33.2vh);
+    height: calc(25.8vh + 18.2vw);
+}
+.background-image{
+    position: absolute;
+    width: calc(23.5vw + 33.2vh);
+    height: calc(18.2vw + 25.8vh);
+    margin-left: calc(19vw + 27vh);
+    z-index: 1;
+}
+
+.body-page{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 88%;
+}
+li{
+    color: red;
+}
+
+
+input{
+    border: calc(0.03vw + 0.05vh) black solid;
+}

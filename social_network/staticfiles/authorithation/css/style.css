@@ -1,0 +1,192 @@
+.registration-frame{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: calc(1.2vw + 1.7vh);
+    width: calc(15.1vw + 21.4vh);
+    background-color: white;
+    border-radius: calc(0.6vw + 0.9vh);
+    padding: calc(1.1vw + 1.7vh);
+    margin-right: calc(16vw + 17.1vh);
+    position: relative;
+    z-index: 2;
+}
+.body{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 88%;
+}
+.reg-or-log-frame{
+    display: flex;
+    justify-content: space-around;
+    flex-direction: row;
+    flex-wrap: wrap;
+    font-size: calc(0.4vw + 0.6vh);
+    height: calc(1.6vw + 2.3vh);
+    width: calc(13.8vw + 19.6vh);
+}
+
+.button-login{
+    height: calc(1.8vw + 2.5vh);
+}
+
+.join-worldit{
+    font-size: calc(0.8vw + 1.1vh);
+    font-weight: 500;
+}
+.registration-form{
+    display: flex;
+    flex-direction: column;
+    gap: calc(0.9vw + 1.2vh);
+}
+
+.image{
+    width: calc(23.5vw + 33.2vh);
+    height: calc(18.2vw + 25.8vh);
+}
+.background-image{
+    position: absolute;
+    width: calc(23.5vw + 33.2vh);
+    height: calc(18.2vw + 25.8vh);
+    margin-left: calc(19vw + 27vh);
+    z-index: 1;
+}
+.inputs{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: calc(0.5vw + 0.7vh);
+}
+
+input{
+    display: flex;
+    flex-direction: column;
+    width: calc(9.5vw + 19.6vh);
+    height: calc(1.4vw + 2vh);
+    border-radius: calc(0.3vw + 0.4vh);
+    color: rgba(129, 129, 141, 1);
+    padding: calc(0.3vw + 0.5vh) calc(0.5vw + 0.8vh);
+    font-size: calc(0.5vw + 0.8vh);
+}
+input:focus{
+    border-radius: calc(0.3vw + 0.4vh); 
+}
+.field-container{
+    display: flex;
+}
+.eye-img{
+    width: calc(0.7vw + 1vh);
+    height: calc(0.7vw + 1vh);
+    position: absolute;
+    left: calc(12vw + 17.5vh);
+    margin-top: calc(0.4vw + 0.5vh);
+}
+.eye-img:hover{
+    cursor: pointer;
+}
+input::placeholder{
+    color: rgba(129, 129, 141, 1);
+}
+button{
+    width: calc(9.5vw + 19.6vh);
+    height: calc(1.8vw + 2.5vh);
+    border-radius: 1234px;
+    border: none;
+    background-color: rgba(84, 60, 82, 1);
+    font-size: calc(0.5vw + 0.7vh);
+    color: white;
+}
+
+button:hover{
+    cursor: pointer;
+    background-color: rgb(68, 48, 66);
+    color: rgb(228, 228, 228);
+}
+.line{
+    width: calc(5.3vw + 7.5vh);
+    height: calc(0.06vw + 0.09vh);
+    background-color: rgba(84, 60, 82, 1);
+}
+
+.authorithation-title{
+    color: rgba(129, 129, 141, 1);
+    font-weight: 500;
+    font-size: calc(1vw + 1.4vh);
+    height: calc(1.3vw + 1.9vh);
+}
+
+.authorithation-title:hover{
+    color: rgb(104, 104, 112);
+    cursor: pointer;
+}
+.registration-title{
+    font-size: calc(1vw + 1.4vh);
+    height: calc(1.3vw + 1.9vh);
+    border-bottom: 0.3vh #070A1C solid
+}
+
+
+a{
+    all: unset;
+}
+a:hover{
+    cursor: pointer;
+}
+
+
+.join-qr{
+    font-size: calc(0.5vw + 0.7vh);
+    font-weight: 400;
+    height: calc(0.6vw + 0.8vh);
+}
+.qr{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: calc(0.8vw + 1.1vh);
+}
+.label-qr{
+    width: calc(13.8vw + 19.6vh);
+    height: calc(0.6vw + 0.8vh);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* gap: calc(0.5vw + 0.7vh); */
+}
+.line-qr{
+    width: calc(1.9vw + 2.6vh);
+    height: calc(0.06vw + 0.09vh);
+    background-color: rgba(129, 129, 141, 1);
+}
+li{
+    color: red;
+}
+
+
+
+
+.id_email{
+    font-weight: 500;
+}
+.image-qr{
+    width: calc(3.5vw + 4.9vh);
+    height: calc(3.5vw + 4.9vh);
+}
+
+label{
+    font-size: calc(0.5vw + 0.7vh);
+    font-weight: 400;
+}
+
+input{
+    font-size: calc(0.5vw + 0.7vh);
+    border: calc(0.03vw + 0.05vh) black solid;
+    
+}
+
+::placeholder{
+    font-size: calc(0.5vw + 0.7vh);
+}
