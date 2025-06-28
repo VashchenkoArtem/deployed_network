@@ -1,167 +1,188 @@
-import profile #
-from django.shortcuts import render, redirect #
-from django.views.generic import TemplateView, DeleteView #
-from user_app.models import Friendship, Avatar #
-from post_app.models import Album #
-from post_app.models import Post #
-from django.urls import reverse_lazy #
-from django.shortcuts import get_object_or_404 #
-from django.contrib.auth.models import User #
-from user_app.models import Profile
+from django.shortcuts import render, redirect, get_object_or_404
+from django.views.generic import TemplateView
+from user_app.models import Friendship, Avatar, Profile
+from post_app.models import Album, Post
+from django.contrib.auth.models import User
+from django.urls import reverse_lazy
 
-#
+# 🔹 Оптимизация общего запроса аватаров по списку профилей
+def get_author_avatars(profiles):
+    avatars = Avatar.objects.filter(profile__in=profiles, shown=True, active=True).only("profile_id", "image")
+    avatar_map = {a.profile_id: a for a in avatars}
+    return {p.id: avatar_map.get(p.id) for p in profiles}
+
+# 🔹 FriendsView
 class FriendsView(TemplateView):
-    template_name = "friends/friends.html" #
-    #
-    def get_context_data(self, **kwargs): 
-        context = super(FriendsView, self).get_context_data(**kwargs) #
-        all_profiles = Profile.objects.all() 
-        profile = all_profiles.get(user = self.request.user) #
-        context["all_recommended"] = all_profiles[:6] #
-        context["all_friends"] = Friendship.objects.filter(accepted = True)[:6] #
-        context["all_requests"] = Friendship.objects.filter(profile2 = profile, accepted = False)[:6] #
-        context["all_avatars"] = Avatar.objects.all() #
-        context["current_user"] = profile #
-        author_avatars = {} #
-        # 
-        for author in all_profiles: #
-            avatar = Avatar.objects.filter(profile=author, shown=True, active=True).first() #
-            author_avatars[author.id] = avatar #
-        context["author_avatars"] = author_avatars #
-        return context #
-    #
+    template_name = "friends/friends.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        current_user = self.request.user
+        profile = Profile.objects.select_related("user").get(user=current_user)
+        all_profiles = Profile.objects.exclude(user=current_user)[:6]
+
+        context.update({
+            "all_recommended": all_profiles,
+            "all_friends": Friendship.objects.filter(accepted=True).only("profile1_id", "profile2_id")[:6],
+            "all_requests": Friendship.objects.filter(profile2=profile, accepted=False)[:6],
+            "all_avatars": Avatar.objects.only("profile_id", "image"),
+            "current_user": profile,
+            "author_avatars": get_author_avatars(all_profiles),
+        })
+        return context
+
     def dispatch(self, request, *args, **kwargs):
-        if not Profile.objects.filter(user_id = request.user.id).exists(): #
-            return redirect("registration") #
-        else:   #
-            return super().dispatch(request, *args, **kwargs) #
-            
-    
-    
-#
+        if not Profile.objects.filter(user=request.user).exists():
+            return redirect("registration")
+        return super().dispatch(request, *args, **kwargs)
+
+# 🔹 AllFriendsView
 class AllFriendsView(TemplateView):
-    template_name = "all_friends/all_friends.html" #
-    #
+    template_name = "all_friends/all_friends.html"
+
     def get_context_data(self, **kwargs):
-        context = super(AllFriendsView, self).get_context_data(**kwargs) #
-        context["all_friends"] = Friendship.objects.filter(accepted = True) #
-        context["all_avatars"] = Avatar.objects.all() #
-        context["current_user"] = Profile.objects.get(user = self.request.user) #
-        author_avatars = {} #
-        for author in Profile.objects.all(): #
-            avatar = Avatar.objects.filter(profile=author, shown=True, active=True).first() #
-            author_avatars[author.id] = avatar #
-        context["author_avatars"] = author_avatars #
-        return context #
-    #
+        context = super().get_context_data(**kwargs)
+        current_user = Profile.objects.get(user=self.request.user)
+        all_profiles = Profile.objects.all()
+        context.update({
+            "all_friends": Friendship.objects.filter(accepted=True).only("profile1_id", "profile2_id"),
+            "all_avatars": Avatar.objects.only("profile_id", "image"),
+            "current_user": current_user,
+            "author_avatars": get_author_avatars(all_profiles),
+        })
+        return context
+
     def dispatch(self, request, *args, **kwargs):
-        if not Profile.objects.filter(user_id = request.user.id).exists(): #
-            return redirect("registration") #
-        else:  #
-            return super().dispatch(request, *args, **kwargs) #
-#
+        if not Profile.objects.filter(user=request.user).exists():
+            return redirect("registration")
+        return super().dispatch(request, *args, **kwargs)
+
+# 🔹 RequestView
 class RequestView(TemplateView):
-    template_name = "all_requests/requests.html" #
-#
+    template_name = "all_requests/requests.html"
+
     def get_context_data(self, **kwargs):
-        context = super(RequestView, self).get_context_data(**kwargs) #
-        profile = Profile.objects.get(user = self.request.user) #
-        context["all_requests"] = Friendship.objects.filter(profile2 = profile, accepted = False) #
-        context["all_avatars"] = Avatar.objects.all() #
-        author_avatars = {} #
-        for author in Profile.objects.all(): #
-            avatar = Avatar.objects.filter(profile=author, shown=True, active=True).first() #
-            author_avatars[author.id] = avatar #
-        context["author_avatars"] = author_avatars #
-        return context #
-    #
-    def dispatch(self, request, *args, **kwargs): 
-        if not Profile.objects.filter(user_id = request.user.id).exists(): #
-            return redirect("registration") #
-        else: #
-            return super().dispatch(request, *args, **kwargs) #
-#
-class RecommendedView(TemplateView):
-    template_name = "recommended/recommended.html" #
-    #
-    def get_context_data(self, **kwargs):
-        context = super(RecommendedView, self).get_context_data(**kwargs) #
-        context["all_recommended"] = Profile.objects.filter().exclude(user = self.request.user) #
-        context["all_avatars"] = Avatar.objects.all() #
-        author_avatars = {} #
-        for author in Profile.objects.all(): #
-            avatar = Avatar.objects.filter(profile=author, shown=True, active=True).first() #
-            author_avatars[author.id] = avatar #
-        context["author_avatars"] = author_avatars #
-        return context #
-    #
-    def dispatch(self, request, *args, **kwargs): 
-        if not Profile.objects.filter(user_id = request.user.id).exists(): #
-            return redirect("registration")#
-        else: # 
-            return super().dispatch(request, *args, **kwargs) #
-#
-class FriendProfileView(TemplateView):
-    template_name = 'friend_profile/friend_profile.html' #
-    def get_context_data(self, **kwargs): #
-        context = super(FriendProfileView, self).get_context_data(**kwargs) #
-        friend_pk = self.kwargs['friend_pk'] #
-        friend_user = User.objects.get(id = friend_pk) # 
-        profile_id = Profile.objects.get(user_id = friend_pk) #
-        context['friend'] = Profile.objects.get(user_id = friend_pk) #
-        context['avatar'] = Avatar.objects.filter(profile = profile_id).first() #
-        context['all_avatars'] = Avatar.objects.all() #
-        context['all_posts'] = Post.objects.filter(author_id = profile_id.pk).all().order_by('-id') #
-        context["posts_count"] = Post.objects.filter(author_id = profile_id.pk).count() #
-        context['current_request'] = Friendship.objects.filter(profile1= Profile.objects.get(user = friend_user), profile2 =Profile.objects.get(user = self.request.user)).union(Friendship.objects.filter(profile2= Profile.objects.get(user = friend_user), profile1 =Profile.objects.get(user = self.request.user))).first()
-        context['all_views'] = Post.objects.none() #
-        context['all_albums'] = Album.objects.filter(author = profile_id) #
-        for post in Post.objects.filter(author = profile_id): #
-            context['all_views'] = context['all_views'] | post.views.all() #
-        context["my_friends"] = Friendship.objects.filter(profile2 = profile_id, accepted = True).union(Friendship.objects.filter(profile1 = profile_id, accepted = True))
-        return context #
-    #
+        context = super().get_context_data(**kwargs)
+        profile = Profile.objects.get(user=self.request.user)
+        all_profiles = Profile.objects.all()
+        context.update({
+            "all_requests": Friendship.objects.filter(profile2=profile, accepted=False).only("profile1_id", "profile2_id"),
+            "all_avatars": Avatar.objects.only("profile_id", "image"),
+            "author_avatars": get_author_avatars(all_profiles),
+        })
+        return context
+
     def dispatch(self, request, *args, **kwargs):
-        if not Profile.objects.filter(user_id = request.user.id).exists():#
-            return redirect("registration") #
-        else: #
-            return super().dispatch(request, *args, **kwargs) #
-#
+        if not Profile.objects.filter(user=request.user).exists():
+            return redirect("registration")
+        return super().dispatch(request, *args, **kwargs)
+
+# 🔹 RecommendedView
+class RecommendedView(TemplateView):
+    template_name = "recommended/recommended.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        all_profiles = Profile.objects.exclude(user=self.request.user)
+        context.update({
+            "all_recommended": all_profiles,
+            "all_avatars": Avatar.objects.only("profile_id", "image"),
+            "author_avatars": get_author_avatars(all_profiles),
+        })
+        return context
+
+    def dispatch(self, request, *args, **kwargs):
+        if not Profile.objects.filter(user=request.user).exists():
+            return redirect("registration")
+        return super().dispatch(request, *args, **kwargs)
+
+# 🔹 FriendProfileView
+class FriendProfileView(TemplateView):
+    template_name = 'friend_profile/friend_profile.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        friend_pk = self.kwargs['friend_pk']
+        friend_profile = Profile.objects.select_related('user').get(user_id=friend_pk)
+        current_profile = Profile.objects.get(user=self.request.user)
+
+        # Посты и просмотры
+        posts = Post.objects.filter(author=friend_profile).prefetch_related("views")
+        views = sum((list(post.views.all()) for post in posts), [])
+
+        # Аватар
+        avatar = Avatar.objects.filter(profile=friend_profile, shown=True, active=True).first()
+
+        # Запрос дружбы
+        current_request = Friendship.objects.filter(
+            profile1=friend_profile, profile2=current_profile
+        ).union(
+            Friendship.objects.filter(profile2=friend_profile, profile1=current_profile)
+        ).first()
+
+        context.update({
+            'friend': friend_profile,
+            'avatar': avatar,
+            'all_avatars': Avatar.objects.only("profile_id", "image"),
+            'all_posts': posts.order_by('-id'),
+            'posts_count': posts.count(),
+            'current_request': current_request,
+            'all_views': views,
+            'all_albums': Album.objects.filter(author=friend_profile),
+            'my_friends': Friendship.objects.filter(profile2=friend_profile, accepted=True).union(
+                Friendship.objects.filter(profile1=friend_profile, accepted=True)
+            ),
+        })
+        return context
+
+    def dispatch(self, request, *args, **kwargs):
+        if not Profile.objects.filter(user=request.user).exists():
+            return redirect("registration")
+        return super().dispatch(request, *args, **kwargs)
+
+# 🔹 Удаление запроса
 def delete_request(request, pk):
-    current_user = Profile.objects.get(user_id = request.user.id) #
-    friend_user = Profile.objects.get(user_id = pk) #
-    if Friendship.objects.filter(profile1_id = request.user.pk, profile2 = friend_user): #
-        Friendship.objects.get(profile1 = current_user, profile2 = friend_user).delete() #
-    if Friendship.objects.filter(profile2 = current_user, profile1 = friend_user): # 
-        Friendship.objects.get(profile2 = current_user, profile1 = friend_user).delete() #
-    return redirect("main_friends") #
-#
+    current_user = Profile.objects.get(user=request.user)
+    friend_user = Profile.objects.get(user_id=pk)
+
+    Friendship.objects.filter(profile1=current_user, profile2=friend_user).delete()
+    Friendship.objects.filter(profile2=current_user, profile1=friend_user).delete()
+
+    return redirect("main_friends")
+
+# 🔹 Удаление рекомендации (можно кастомизировать под метку "скрыть")
 def delete_recommended(request, pk):
-    rejected_user = User.objects.get(id = pk) #
-    return redirect("main_friends") #
-#
+    # Допиши здесь сохранение "отказа" в рекомендациях, если нужно
+    return redirect("main_friends")
+
+# 🔹 Удаление друга
 def delete_friend(request, pk):
-    current_user = Profile.objects.get(user_id = request.user.id) #
-    friend_user = Profile.objects.get(user_id = pk)#
-    if Friendship.objects.filter(profile1 = current_user, profile2 = friend_user): #
-        Friendship.objects.get(profile1 = current_user, profile2 = friend_user).delete() #
-    if Friendship.objects.filter(profile2 = current_user, profile1 = friend_user): #
-        Friendship.objects.get(profile2 = current_user, profile1 = friend_user).delete() #
-    return redirect("main_friends") #
-#
-def confirm_friend(request, pk):    
-    current_profile = Profile.objects.get(user_id = request.user.id) #
-    friend_profile = Profile.objects.get(user_id = pk) #
-    current_user = User.objects.get(id = request.user.id) #
-    friend_user = User.objects.get(id = pk)#
-    request = Friendship.objects.get(profile1=friend_profile, profile2=current_profile) #
-    request.accepted = True #
-    request.save() #
-    return redirect("main_friends") #
-#
+    current_user = Profile.objects.get(user=request.user)
+    friend_user = Profile.objects.get(user_id=pk)
+
+    Friendship.objects.filter(profile1=current_user, profile2=friend_user).delete()
+    Friendship.objects.filter(profile2=current_user, profile1=friend_user).delete()
+
+    return redirect("main_friends")
+
+# 🔹 Подтверждение заявки в друзья
+def confirm_friend(request, pk):
+    current_profile = Profile.objects.get(user=request.user)
+    friend_profile = Profile.objects.get(user_id=pk)
+
+    request_obj = Friendship.objects.get(profile1=friend_profile, profile2=current_profile)
+    request_obj.accepted = True
+    request_obj.save()
+
+    return redirect("main_friends")
+
+# 🔹 Отправка заявки
 def request_to_user(request, pk):
-    current_user = Profile.objects.get(user_id = request.user.id) #
-    request_user = Profile.objects.get(user_id = pk) #
-    if len(Friendship.objects.filter(profile1 = current_user, profile2 = request_user)) == 0 and len(Friendship.objects.filter(profile1 = request_user, profile2 = current_user)) == 0: #
-        Friendship.objects.create(profile1 = current_user, profile2 = request_user, accepted = False) #
-    return redirect("main_friends") #
+    current_user = Profile.objects.get(user=request.user)
+    request_user = Profile.objects.get(user_id=pk)
+
+    if not Friendship.objects.filter(profile1=current_user, profile2=request_user).exists() and \
+       not Friendship.objects.filter(profile1=request_user, profile2=current_user).exists():
+        Friendship.objects.create(profile1=current_user, profile2=request_user, accepted=False)
+
+    return redirect("main_friends")
