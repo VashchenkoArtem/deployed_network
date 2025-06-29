@@ -77,13 +77,14 @@ class MyPublicationsView(CreateView):
     
     def get_context_data(self, **kwargs):
         context = super(MyPublicationsView, self).get_context_data(**kwargs) 
+        profile_id = self.request.user.profile.id
         my_posts = Post.objects.filter(author_id = self.request.user.profile.id).order_by('-id')[:3] #
+        context["my_avatar"] = Avatar.objects.filter(profile_id = profile_id).first()
         context["posts"] = my_posts # 
         context["tags"] = Tag.objects.all() # 
         author_avatars = {} #
         context['author_avatars'] = author_avatars 
         context['all_groups'] = ChatGroup.objects.none() #
-        profile_id = self.request.user.profile.id
 
         context["all_requests"] = Friendship.objects.filter(profile2_id = profile_id) #
         return context #

@@ -47,14 +47,19 @@ class MainView(CreateView):
         return response
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["posts"] = Post.objects.order_by('-id')[:3]
-        context["tags"] = Tag.objects.all()
-        context['author_avatars'] = {}
-        context['all_groups'] = ChatGroup.objects.none()
-        profile_id = self.request.user.profile.id
-        context["all_requests"] = Friendship.objects.filter(profile2_id=profile_id)
-        return context
+        try:
+            context = super().get_context_data(**kwargs)
+            context["posts"] = Post.objects.order_by('-id')[:3]
+            context["tags"] = Tag.objects.all()
+            profile_id = self.request.user.profile.id
+            context["profile_id"] = profile_id
+            context['author_avatars'] = {}
+            context["my_avatar"] = Avatar.objects.filter(profile_id = profile_id).first()
+            context['all_groups'] = ChatGroup.objects.none()
+            context["all_requests"] = Friendship.objects.filter(profile2_id=profile_id)
+            return context
+        except:
+            return redirect("registration")
 
 class MyDeleteView(DeleteView):
     template_name = "delete_post/index.html"

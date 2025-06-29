@@ -15,12 +15,10 @@
         <div class = "profile-frame">
             <div class = "frame profile">
                 <div class = "avatar">
-                    {% if my_avatars %}
-                        {% for avatar in my_avatars %}
-                            {% if avatar.image %}      
-                                <img class = "my-avatar" src="{{ avatar.image.url }}" alt="">
-                            {% endif %}
-                        {% endfor%}
+                    {% if my_avatar %}
+                        {% if my_avatar.image %}      
+                            <img class = "my-avatar" src="{{ my_avatar.image.url }}" alt="">
+                        {% endif %}
                     {% else %}
                         <img class = "my-avatar" src="{% static 'images/icons/account.png'%}" alt="">
                     {% endif %}
@@ -239,13 +237,15 @@
                                         
 
                                         <div class="logo-post">
-                                            {% with author_avatar=author_avatars|get_item:post.author.id %}
-                                                {% if author_avatar and author_avatar.image %}
-                                                    <img class="post-friend-avatar" src="{{ author_avatar.image.url }}" alt="">
+                                            {% if post.author_id == profile_id %}
+                                                {% if my_avatar %}  
+                                                    <img class = "post-friend-avatar" src = "{{ my_avatar.image.url }}" alt="">
                                                 {% else %}
                                                     <img class="post-friend-avatar" src="{% static 'images/icons/account.png' %}" alt="">
                                                 {% endif %}
-                                            {% endwith %}
+                                            {% else %}
+                                                <img class="post-friend-avatar" src="{% static 'images/icons/account.png' %}" alt="">
+                                            {% endif %}
                                         </div>
                                         </div>
                                         <div class = "nick-post">
